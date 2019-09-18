@@ -26,5 +26,8 @@
     <ClInclude Include="include\Sage.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="include\Baguette.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

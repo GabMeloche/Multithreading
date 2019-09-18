@@ -129,6 +129,7 @@
     <ClCompile Include="src\Sage.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="include\Baguette.h" />
     <ClInclude Include="include\Sage.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
