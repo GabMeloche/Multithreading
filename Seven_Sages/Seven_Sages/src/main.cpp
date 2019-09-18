@@ -38,7 +38,7 @@ int main()
 	{
 		for (int i = 0; i < 7; ++i)
 		{
-			std::cout << i << " " << sageArray[i].GetState() << " / ";
+			std::cout << sageArray[i].GetState() << " / ";
 			
 		}
 		std::this_thread::sleep_for(std::chrono::seconds(1));

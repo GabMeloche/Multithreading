@@ -7,56 +7,14 @@
 Sage::Sage()
 {
 	m_state = State::THINKING;
-	 static int id = 0;
-	 m_id = ++id;
-	 m_left = nullptr;
-	 m_right = nullptr;
-
-	 std::cout << "Sage " << m_id << " has been created\n";
+	static int id = 0;
+	m_id = ++id;
+	m_left = nullptr;
+	m_right = nullptr;
 }
 
 void Sage::ChangeState(State p_state)
 {
-	/*std::string type1;
-	std::string type2;
-
-	if (m_state == State::THINKING && p_state == State::EATING)
-	{
-		type1 = "THINKING";
-		type2 = "EATING";
-	}
-
-	if (m_state == State::EATING && p_state == State::THINKING)
-	{
-		type1 = "EATING";
-		type2 = "THINKING";
-	}
-
-	if (m_state == State::WAITING && p_state == State::THINKING)
-	{
-		type1 = "WAITING";
-		type2 = "THINKING";
-	}
-
-	if (m_state == State::THINKING && p_state == State::WAITING)
-	{
-		type1 = "THINKING";
-		type2 = "WAITING";
-	}
-
-	if (m_state == State::WAITING && p_state == State::EATING)
-	{
-		type1 = "WAITING";
-		type2 = "EATING";
-	}
-
-	if (m_state == State::EATING && p_state == State::WAITING)
-	{
-		type1 = "EATING";
-		type2 = "WAITING";
-	}
-
-	std::cout << "Sage " << m_id << " changed from " << type1 << " to " << type2 << std::endl;*/
 	m_state = p_state;
 }
 
@@ -65,15 +23,15 @@ std::string Sage::GetState()
 	switch (m_state)
 	{
 	case State::EATING:
-		return "EATING";
+		return "E";
 		break;
 
 	case State::THINKING:
-		return "THINKING";
+		return "T";
 		break;
 
 	case State::WAITING:
-		return "WAITING";
+		return "W";
 		break;
 
 	default:
@@ -87,41 +45,42 @@ void Sage::main()
 {
 	while (true)
 	{
-		switch (m_state)
+		bool rightLock;
+		bool leftLock;
+
+		if (m_state == State::THINKING)
 		{
-		case State::THINKING:
-			if (m_left->m_isUsed == true || m_right->m_isUsed == true)
-				ChangeState(State::WAITING);
+			std::this_thread::sleep_for(std::chrono::seconds(5));
+			ChangeState(State::WAITING);
+		}
 
-			else if (m_left->m_isUsed == false && m_right->m_isUsed == false)
+		else if (m_state == State::WAITING)
+		{
+			rightLock = m_right->m_mutex.try_lock();
+			leftLock = m_left->m_mutex.try_lock();
+
+			if (rightLock && leftLock)
 			{
 				ChangeState(State::EATING);
-				m_left->m_isUsed = true;
-				m_right->m_isUsed = true;
+				std::this_thread::sleep_for(std::chrono::seconds(3));
 			}
-
-			break;
-
-		case State::WAITING:
-			if (m_left->m_isUsed == false && m_right->m_isUsed == false)
+			else
 			{
-				ChangeState(State::EATING);
-				m_left->m_isUsed = true;
-				m_right->m_isUsed = true;
+				if (rightLock)
+					m_right->m_mutex.unlock();
+				
+				if (leftLock)
+					m_left->m_mutex.unlock();
 			}
-			break;
-
-		case State::EATING:
+		}
+		else if (m_state == State::EATING)
+		{
+			m_left->m_mutex.unlock();
+			m_right->m_mutex.unlock();
 			ChangeState(State::THINKING);
-			m_left->m_isUsed = false;
-			m_right->m_isUsed = false;
-			break;
-
-		default:
-			break;
 		}
 		++m_cyclesCompleted;
-		std::this_thread::sleep_for(std::chrono::seconds(2));
 	}
+
 
 }
