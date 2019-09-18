@@ -13,11 +13,6 @@ Sage::Sage()
 	m_right = nullptr;
 }
 
-void Sage::ChangeState(State p_state)
-{
-	m_state = p_state;
-}
-
 std::string Sage::GetState()
 {
 	switch (m_state)
@@ -43,44 +38,52 @@ std::string Sage::GetState()
 
 void Sage::main()
 {
-	while (true)
+	m_dayFinished = false;
+
+	while (m_cyclesCompleted < 3)
 	{
 		bool rightLock;
 		bool leftLock;
 
-		if (m_state == State::THINKING)
+		switch (m_state)
 		{
+		case State::THINKING:
 			std::this_thread::sleep_for(std::chrono::seconds(5));
-			ChangeState(State::WAITING);
-		}
+			SetState(State::WAITING);
+			break;
 
-		else if (m_state == State::WAITING)
-		{
+		case State::WAITING:
 			rightLock = m_right->m_mutex.try_lock();
 			leftLock = m_left->m_mutex.try_lock();
 
 			if (rightLock && leftLock)
 			{
-				ChangeState(State::EATING);
+				SetState(State::EATING);
 				std::this_thread::sleep_for(std::chrono::seconds(3));
 			}
 			else
 			{
 				if (rightLock)
 					m_right->m_mutex.unlock();
-				
+
 				if (leftLock)
 					m_left->m_mutex.unlock();
 			}
-		}
-		else if (m_state == State::EATING)
-		{
+
+			break;
+
+		case State::EATING:
 			m_left->m_mutex.unlock();
 			m_right->m_mutex.unlock();
-			ChangeState(State::THINKING);
+			SetState(State::THINKING);
+			++m_cyclesCompleted;
+			break;
+
+		default:
+			break;
 		}
-		++m_cyclesCompleted;
 	}
-
-
+	std::cout << "\nSage " << m_id << " finished for the day" << std::endl;
+	m_dayFinished = true;
 }
+
