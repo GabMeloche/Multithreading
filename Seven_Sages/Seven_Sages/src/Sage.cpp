@@ -3,12 +3,14 @@
 #include <string>
 #include <chrono>
 #include <thread>
+#include <ColorPrint.h>
 
-Sage::Sage()
+Sage::Sage(unsigned int p_mealsPerDay)
 {
 	m_state = State::THINKING;
 	static int id = 0;
 	m_id = ++id;
+	m_mealsPerDay = p_mealsPerDay;
 	m_left = nullptr;
 	m_right = nullptr;
 }
@@ -36,11 +38,32 @@ std::string Sage::GetState()
 	}
 }
 
+void Sage::PrintStatus()
+{
+	switch (m_state)
+	{
+	case State::EATING:
+		ColorPrint::Print(Color::RED, "E");
+		break;
+
+	case State::THINKING:
+		ColorPrint::Print(Color::BLUE, "T");
+		break;
+
+	case State::WAITING:
+		ColorPrint::Print(Color::GREEN, "W");
+		break;
+
+	default:
+		break;
+	}
+}
+
 void Sage::main()
 {
 	m_dayFinished = false;
 
-	while (m_cyclesCompleted < 3)
+	while (m_cyclesCompleted < m_mealsPerDay)
 	{
 		bool rightLock;
 		bool leftLock;
@@ -83,6 +106,7 @@ void Sage::main()
 			break;
 		}
 	}
+
 	std::cout << "\nSage " << m_id << " finished for the day" << std::endl;
 	m_dayFinished = true;
 }

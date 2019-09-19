@@ -21,12 +21,21 @@
     <ClCompile Include="src\Sage.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\SageManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\Sage.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\Baguette.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\ColorPrint.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\SageManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
