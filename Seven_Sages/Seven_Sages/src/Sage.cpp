@@ -1,9 +1,4 @@
 #include <Sage.h>
-#include <iostream>
-#include <string>
-#include <chrono>
-#include <thread>
-#include <ColorPrint.h>
 
 Sage::Sage(unsigned int p_mealsPerDay)
 {
@@ -15,30 +10,26 @@ Sage::Sage(unsigned int p_mealsPerDay)
 	m_right = nullptr;
 }
 
-std::string Sage::GetState()
+std::string Sage::GetState() const
 {
 	switch (m_state)
 	{
 	case State::EATING:
 		return "E";
-		break;
 
 	case State::THINKING:
 		return "T";
-		break;
 
 	case State::WAITING:
 		return "W";
-		break;
 
 	default:
 		return "null";
-		break;
 
 	}
 }
 
-void Sage::PrintStatus()
+void Sage::PrintStatus() const
 {
 	switch (m_state)
 	{
@@ -107,7 +98,6 @@ void Sage::main()
 		}
 	}
 
-	std::cout << "\nSage " << m_id << " finished for the day" << std::endl;
 	m_dayFinished = true;
 }
 
