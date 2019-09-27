@@ -37,6 +37,7 @@ void Rendering::Resources::Model::AddTexture(const std::string& p_texturePath) c
 
 void Rendering::Resources::Model::LoadModel(const char* filename) noexcept
 {
+	bool isQuad;
 	std::vector<Geometry::Vertex> vertices;
 	std::vector<GLuint> faceIndex, textureIndex, normalIndex;
 	std::vector<glm::vec3> tmp_vertex;
@@ -91,28 +92,34 @@ void Rendering::Resources::Model::LoadModel(const char* filename) noexcept
 		//check for faces
 		else if (line.substr(0, 2) == "f ") 
 		{
-			GLuint x, y, z; //to store mesh index
-			GLuint u, v, w; //to store texture index
-			GLuint X, Y, Z; //to store normal index
+			GLuint x, y, z, a; //to store mesh index
+			GLuint u, v, w, i; //to store texture index
+			GLuint X, Y, Z, A; //to store normal index
 			//std::istringstream v;
 		  //v.str(line.substr(2));
 			const char* chh = line.c_str();
-			sscanf(chh, "f %i/%i/%i %i/%i/%i %i/%i/%i", &x, &u, &X, &y, &v, &Y, &z, &w, &Z); //here it read the line start with f and store the corresponding values in the variables
+			int count = sscanf(chh, "f %i/%i/%i %i/%i/%i %i/%i/%i %i/%i/%i", &x, &u, &X, &y, &v, &Y, &z, &w, &Z, &a, &i, &A); //here it read the line start with f and store the corresponding values in the variables
 			
 			faceIndex.push_back(x - 1); textureIndex.push_back(u - 1); normalIndex.push_back(X - 1);
 			faceIndex.push_back(y - 1); textureIndex.push_back(v - 1); normalIndex.push_back(Y - 1);
 			faceIndex.push_back(z - 1); textureIndex.push_back(w - 1); normalIndex.push_back(Z - 1);
+			if (count == 12)
+			{
+				//faceIndex.push_back(a - 1); textureIndex.push_back(i - 1); normalIndex.push_back(A - 1);
+				isQuad = true;
+			}
+			else
+				isQuad = false;
 		}
 
 	}
 	
-	for (unsigned int i = 0; i < tmp_vertex.size(); ++i)
+	for (unsigned int i = 0; i < faceIndex.size(); ++i)
 	{
-		//vertices.emplace_back(Geometry::Vertex{ tmp_vertex[i], tmp_uv[textureIndex[i]], tmp_normal[normalIndex[i]] });
-		vertices.emplace_back(Geometry::Vertex{ tmp_vertex[i], tmp_uv[textureIndex[i]], tmp_normal[normalIndex[i]] });
+		vertices.emplace_back(Geometry::Vertex{ tmp_vertex[i % tmp_vertex.size()], tmp_uv[textureIndex[i]], tmp_normal[normalIndex[i]] });
 	}
 	m_mesh = std::make_shared<Mesh>(vertices, faceIndex);
-
+	m_mesh->SetQuad(isQuad);
 }
 
 void Rendering::Resources::Model::LoadShader(const std::string& p_vertexFilepath,

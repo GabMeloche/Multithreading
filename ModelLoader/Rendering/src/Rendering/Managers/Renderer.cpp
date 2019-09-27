@@ -32,12 +32,19 @@ void Rendering::Managers::Renderer::Draw(
 
     if (p_model.GetMesh()->GetIndicesCount() > 0)
     {
-        glDrawElements(GL_TRIANGLES, p_model.GetMesh()->GetIndicesCount(),
+    	//if (!p_model.GetMesh()->GetQuad())
+			glDrawElements(GL_TRIANGLES, p_model.GetMesh()->GetIndicesCount(),
                        GL_UNSIGNED_INT, 0);
+		/*else
+			glDrawElements(GL_QUADS, p_model.GetMesh()->GetIndicesCount(),
+				GL_UNSIGNED_INT, 0);*/
     }
     else
     {
-        glDrawArrays(GL_TRIANGLES, 0, p_model.GetMesh()->GetVertexCount());
+    	//if (!p_model.GetMesh()->GetQuad())
+			glDrawArrays(GL_TRIANGLES, 0, p_model.GetMesh()->GetVertexCount());
+    	/*else
+			glDrawArrays(GL_QUADS, 0, p_model.GetMesh()->GetVertexCount());*/
     }
 
     p_model.Unbind();

@@ -36,7 +36,7 @@ int main()
 
 	//object1->AddComponent<Core::Components::ModelComponent>("../rsc/models/mannequin.fbx");
 	//car->AddComponent<Core::Components::ModelComponent>("../rsc/models/standard_car.fbx");
-	player->AddComponent<Core::Components::ModelComponent>("../rsc/models/statue.obj");
+	player->AddComponent<Core::Components::ModelComponent>("../rsc/models/Cube.obj");
 	glm::vec3 distanceFromPlayer(0.0f, 0.2f, 0.0f);
 	player->AddComponent<Core::Components::CameraComponent>(distanceFromPlayer);
 
@@ -79,7 +79,9 @@ int main()
 		// ##### Update #####
 		gameManager.Update();
 
-
+		gameManager.GetActiveScene().FindGameObject("player")->SetTransform(newPos3, rota3, scale3);
+		rota3.x += 1;
+		rota3.y += 1;
 		// ##### Drawing #####
 		gameManager.DrawActiveScene(*renderer);
 		device->Render();
