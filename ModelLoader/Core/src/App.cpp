@@ -36,12 +36,12 @@ int main()
 
 	//object1->AddComponent<Core::Components::ModelComponent>("../rsc/models/mannequin.fbx");
 	//car->AddComponent<Core::Components::ModelComponent>("../rsc/models/standard_car.fbx");
-	player->AddComponent<Core::Components::ModelComponent>("../rsc/models/Cube.obj");
+	player->AddComponent<Core::Components::ModelComponent>("../rsc/models/statue.obj");
 	glm::vec3 distanceFromPlayer(0.0f, 0.2f, 0.0f);
 	player->AddComponent<Core::Components::CameraComponent>(distanceFromPlayer);
 
 	//player->AddComponent<Core::Components::ModelComponent>("../rsc/models/mannequin.fbx");
-	//player->AddTexture("../rsc/textures/brick.png");
+	player->AddTexture("../rsc/textures/brick.png");
 
 	//scene1.AddGameObject(object1, "object1");
 	//scene1.AddGameObject(car, "car");

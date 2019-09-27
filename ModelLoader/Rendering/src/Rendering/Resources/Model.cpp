@@ -44,6 +44,7 @@ void Rendering::Resources::Model::LoadModel(const char* filename) noexcept
 	std::vector<glm::vec3> tmp_normal;
 	
 	std::ifstream in(filename);
+	
 	if (!in)
 	{
 		std::cerr << "Cannot open " << filename << std::endl;
@@ -54,7 +55,8 @@ void Rendering::Resources::Model::LoadModel(const char* filename) noexcept
 	while (std::getline(in, line))
 	{
 		//check v for vertices
-		if (line.substr(0, 2) == "v ") {
+		if (line.substr(0, 2) == "v ") 
+		{
 			std::istringstream v(line.substr(2));
 			glm::vec3 vert;
 			GLfloat x, y, z;
@@ -63,7 +65,8 @@ void Rendering::Resources::Model::LoadModel(const char* filename) noexcept
 			tmp_vertex.push_back(vert);
 		}
 		//check for texture co-ordinate
-		else if (line.substr(0, 2) == "vt") {
+		else if (line.substr(0, 2) == "vt") 
+		{
 
 			std::istringstream v(line.substr(3));
 			glm::vec2 tex;
@@ -73,7 +76,8 @@ void Rendering::Resources::Model::LoadModel(const char* filename) noexcept
 			tmp_uv.push_back(tex);
 
 		}
-		else if (line.substr(0, 2) == "vn") {
+		else if (line.substr(0, 2) == "vn") 
+		{
 
 			std::istringstream v(line.substr(3));
 			glm::vec3 norm;
@@ -85,7 +89,8 @@ void Rendering::Resources::Model::LoadModel(const char* filename) noexcept
 		}
 		
 		//check for faces
-		else if (line.substr(0, 2) == "f ") {
+		else if (line.substr(0, 2) == "f ") 
+		{
 			GLuint x, y, z; //to store mesh index
 			GLuint u, v, w; //to store texture index
 			GLuint X, Y, Z; //to store normal index
@@ -100,20 +105,12 @@ void Rendering::Resources::Model::LoadModel(const char* filename) noexcept
 		}
 
 	}
-	//the mesh data is finally calculated here
 	
-	for (unsigned int i = 0; i < faceIndex.size(); i++)
+	for (unsigned int i = 0; i < tmp_vertex.size(); ++i)
 	{
-		glm::vec3 a{ tmp_vertex[faceIndex[i]].x, tmp_vertex[faceIndex[i]].y, tmp_vertex[faceIndex[i]].z };
-		glm::vec2 b{ tmp_uv[textureIndex[i]].x, tmp_uv[textureIndex[i]].y };
-		glm::vec3 c{ tmp_normal[normalIndex[i]].x, tmp_normal[normalIndex[i]].y, tmp_normal[normalIndex[i]].z };
-		
-		Geometry::Vertex vertex{ a, b, c };
-		
-		vertices.emplace_back(vertex);
-
+		//vertices.emplace_back(Geometry::Vertex{ tmp_vertex[i], tmp_uv[textureIndex[i]], tmp_normal[normalIndex[i]] });
+		vertices.emplace_back(Geometry::Vertex{ tmp_vertex[i], tmp_uv[textureIndex[i]], tmp_normal[normalIndex[i]] });
 	}
-
 	m_mesh = std::make_shared<Mesh>(vertices, faceIndex);
 
 }
