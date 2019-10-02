@@ -11,6 +11,7 @@ namespace Core::Components
 	public:
 		ModelComponent(GameObject& p_gameObject);
 		ModelComponent(GameObject& p_gameObject, const char* p_path);
+		ModelComponent(Core::GameObject& p_gameObject, Rendering::Resources::Model& p_model);
 		~ModelComponent();
 		ModelComponent(const ModelComponent& p_other);
 
@@ -18,7 +19,8 @@ namespace Core::Components
 		void Update() override;
 		const std::shared_ptr<Rendering::Resources::Mesh>& GetMesh() const;
 		const std::shared_ptr<Rendering::Resources::Model>& GetModel() const;
-
+		void MakeModel(const char* p_path);
+		
 	private:
 		std::string m_type = "ModelComponent";
 		std::shared_ptr<Rendering::Resources::Model> m_model;

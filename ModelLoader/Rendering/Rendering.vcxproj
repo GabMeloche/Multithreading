@@ -255,6 +255,7 @@ copy "$(SolutionDir)Dependencies\assimp\bin\$(Configuration)\$(Platform)\assimp-
     <ClInclude Include="include\Rendering\Resources\Mesh.h" />
     <ClInclude Include="include\Rendering\Managers\Renderer.h" />
     <ClInclude Include="include\Rendering\Resources\Transform.h" />
+    <ClInclude Include="include\Rendering\Resources\Loaders\ResourceLoader.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

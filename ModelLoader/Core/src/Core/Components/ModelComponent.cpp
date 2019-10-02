@@ -13,8 +13,12 @@ ModelComponent::ModelComponent(Core::GameObject& p_gameObject) : m_gameObject{ p
 
 ModelComponent::ModelComponent(Core::GameObject& p_gameObject, const char* p_path) : m_gameObject { p_gameObject }
 {
-	//m_model = &Rendering::Resources::Model(p_path);
 	m_model = std::make_unique<Rendering::Resources::Model>(Rendering::Resources::Model(p_path));
+}
+
+ModelComponent::ModelComponent(Core::GameObject& p_gameObject, Rendering::Resources::Model& p_model) : m_gameObject{ p_gameObject }
+{
+	m_model = std::make_unique<Rendering::Resources::Model>(p_model);
 }
 
 ModelComponent::~ModelComponent()
