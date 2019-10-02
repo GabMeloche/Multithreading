@@ -42,18 +42,18 @@ int main()
 
 	std::vector<Rendering::Resources::Model> models;
 	
-	std::thread t1{ &ResourceLoader::ThreadLoadModel, std::ref(models), "../rsc/models/cube.obj" };
+	/*std::thread t1{ &ResourceLoader::ThreadLoadModel, std::ref(models), "../rsc/models/cube.obj" };
 	t1.join();
 	std::cout << "join1\n";
 	std::thread t2{ &ResourceLoader::ThreadLoadModel, std::ref(models), "../rsc/models/Handgun_obj.obj" };
 	std::cout << "join2\n";
 	t2.join();
 	std::thread t3{ &ResourceLoader::ThreadLoadModel, std::ref(models), "../rsc/models/statue.obj" };
-	/*ResourceLoader::ThreadLoadModel(models, "../rsc/models/cube.obj");
-	ResourceLoader::ThreadLoadModel(models, "../rsc/models/Handgun_obj.obj");
-	ResourceLoader::ThreadLoadModel(models, "../rsc/models/statue.obj");*/
 	t3.join();
-	std::cout << "join3\n";
+	std::cout << "join3\n";*/
+	ResourceLoader::ThreadLoadModel(models, "../rsc/models/cube.obj");
+	ResourceLoader::ThreadLoadModel(models, "../rsc/models/Handgun_obj.obj");
+	ResourceLoader::ThreadLoadModel(models, "../rsc/models/statue.obj");
 	
 	player->AddComponent<Core::Components::ModelComponent>(models[0]);
 	gun->AddComponent<Core::Components::ModelComponent>(models[1]);
