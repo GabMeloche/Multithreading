@@ -209,6 +209,7 @@ xcopy "$(SolutionDir)rsc" "$(OutDir)..\rsc\" /E /Y</Command>
     <ClCompile Include="src\Core\Components\PlayerComponent.cpp" />
     <ClCompile Include="src\Core\GameManager.cpp" />
     <ClCompile Include="src\Core\GameObject.cpp" />
+    <ClCompile Include="src\Core\ResourceManager.cpp" />
     <ClCompile Include="src\Core\Scene.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -227,6 +228,7 @@ xcopy "$(SolutionDir)rsc" "$(OutDir)..\rsc\" /E /Y</Command>
     <ClInclude Include="include\Core\Components\PlayerComponent.h" />
     <ClInclude Include="include\Core\GameManager.h" />
     <ClInclude Include="include\Core\GameObject.h" />
+    <ClInclude Include="include\Core\ResourceManager.h" />
     <ClInclude Include="include\Core\Scene.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

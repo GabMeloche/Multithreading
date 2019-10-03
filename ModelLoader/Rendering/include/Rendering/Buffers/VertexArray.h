@@ -22,7 +22,7 @@ namespace Rendering::Buffers
 		void Unbind() const noexcept;
 
 		[[nodiscard]] const GLuint& GetId() const noexcept;
-		void AddBuffer(const VertexBuffer& p_buffer, const size_t& p_countElements, const GLType& p_type) noexcept;
+		void AddBuffer(const VertexBuffer* p_buffer, const size_t& p_countElements, const GLType& p_type) noexcept;
 
 	private:
 		GLuint m_id{};

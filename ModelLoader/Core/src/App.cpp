@@ -17,6 +17,8 @@
 #include <Core/GameManager.h>
 #include <Core/Components/ModelComponent.h>
 #include <Core/Components/CameraComponent.h>
+#include <Core/ResourceManager.h>
+#include <thread>
 
 int main()
 {
@@ -30,22 +32,38 @@ int main()
 	Rendering::LowRenderer::Camera mainCamera;
 
 	std::shared_ptr<Core::GameObject> statue = std::make_shared<Core::GameObject>();
-	std::shared_ptr<Core::GameObject> car = std::make_shared<Core::GameObject>();
+	std::shared_ptr<Core::GameObject> table = std::make_shared<Core::GameObject>();
     std::shared_ptr<Core::GameObject> player = std::make_shared<Core::GameObject>();
 	Core::Scene scene1{};
 
-	statue->AddComponent<Core::Components::ModelComponent>("../rsc/models/statue.obj");
-	//car->AddComponent<Core::Components::ModelComponent>("../rsc/models/standard_car.fbx");
-	player->AddComponent<Core::Components::ModelComponent>("../rsc/models/Cube.obj");
+	ResourceManager resourceMgr{};
+	std::thread t1{ &ResourceManager::AddModel, std::ref(resourceMgr), "../rsc/models/statue.obj" };
+	t1.join();
+	std::thread t2{ &ResourceManager::AddModel, std::ref(resourceMgr),"../rsc/models/TigerTank.obj" };
+	t2.join();
+	std::thread t3{ &ResourceManager::AddModel, std::ref(resourceMgr),"../rsc/models/BarrocMiniTable.obj" };
+	t3.join();
+	/*resourceMgr.AddModel("../rsc/models/statue.obj");
+	resourceMgr.AddModel("../rsc/models/Cube.obj");*/
+	resourceMgr.GetModels()[0]->GetMesh()->CreateBuffers();
+	resourceMgr.GetModels()[0]->LoadShader();
+	resourceMgr.GetModels()[1]->GetMesh()->CreateBuffers();
+	resourceMgr.GetModels()[1]->LoadShader();
+	resourceMgr.GetModels()[2]->GetMesh()->CreateBuffers();
+	resourceMgr.GetModels()[2]->LoadShader();
+
+	statue->AddComponent<Core::Components::ModelComponent>(resourceMgr.GetModels()[0]);
+	player->AddComponent<Core::Components::ModelComponent>(resourceMgr.GetModels()[1]);
+	table->AddComponent<Core::Components::ModelComponent>(resourceMgr.GetModels()[2]);
+	
 	glm::vec3 distanceFromPlayer(0.0f, 0.2f, 0.0f);
 	player->AddComponent<Core::Components::CameraComponent>(distanceFromPlayer);
 
-	//player->AddComponent<Core::Components::ModelComponent>("../rsc/models/mannequin.fbx");
 	player->AddTexture("../rsc/textures/brick.png");
 
 	scene1.AddGameObject(statue, "statue");
-	//scene1.AddGameObject(car, "car");
 	scene1.AddGameObject(player, "player");
+	scene1.AddGameObject(table, "table");
 
 	gameManager.AddScene(scene1);
 	gameManager.SetActiveScene(0);
@@ -63,8 +81,8 @@ int main()
 	glm::vec3 scale3 = glm::vec3(0.005f, 0.005f, 0.005f);
 
 	gameManager.GetActiveScene().FindGameObject("statue")->SetTransform(newPos, rota, scale);
-	//gameManager.GetActiveScene().FindGameObject("car")->SetTransform(newPos2, rota2, scale2);
 	gameManager.GetActiveScene().FindGameObject("player")->SetTransform(newPos3, rota3, scale3);
+	gameManager.GetActiveScene().FindGameObject("table")->SetTransform(newPos2, rota2, scale2);
 
 	//Core::Components::PlayerComponent& playerComp = *player->GetComponent<Core::Components::PlayerComponent>();
 

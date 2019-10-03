@@ -12,7 +12,7 @@
 Rendering::Resources::Model::Model(const char* p_path) noexcept
 {
 	LoadModel(p_path);
-	LoadShader();
+	//LoadShader();
 }
 
 Rendering::Resources::Model::Model(const char* p_modelPath,
@@ -20,7 +20,13 @@ Rendering::Resources::Model::Model(const char* p_modelPath,
 	const std::string& p_fragmentFilepath) noexcept
 {
 	LoadModel(p_modelPath);
-	LoadShader(p_vertexFilepath.c_str(), p_fragmentFilepath);
+	//LoadShader(p_vertexFilepath.c_str(), p_fragmentFilepath);
+}
+
+Rendering::Resources::Model::Model(Mesh* p_mesh)
+{
+	m_mesh = p_mesh;
+	//LoadShader();
 }
 
 Rendering::Resources::Model::Model(const Model& p_other) noexcept
@@ -125,8 +131,7 @@ void Rendering::Resources::Model::LoadModel(const char* filename) noexcept
 void Rendering::Resources::Model::LoadShader(const std::string& p_vertexFilepath,
 	const std::string& p_fragmentFilepath) noexcept
 {
-	m_shader = new Shader(*Loaders::ShaderLoader::
-		Load(p_vertexFilepath, p_fragmentFilepath));
+	m_shader = Loaders::ShaderLoader::Load(p_vertexFilepath, p_fragmentFilepath);
 }
 
 void Rendering::Resources::Model::Bind() const noexcept

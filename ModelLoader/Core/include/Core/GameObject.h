@@ -45,7 +45,7 @@ namespace Core
 					std::cout << "GameObject already has one CameraComponent\n";
 					return;
 				}
-				m_components.emplace_back(new T(p_component));
+				m_components.emplace_back(std::make_shared<T>(p_component));
 			}
 			catch (...)
 			{
@@ -56,6 +56,8 @@ namespace Core
 		template<typename T, typename ... args>
 		void AddComponent(args ... p_args)
 		{
+			static_assert(std::is_base_of_v<Components::IComponent, T>);
+			
 			try
 			{
 				if (typeid(T) == typeid(Core::Components::PlayerComponent) && GetComponent<Core::Components::PlayerComponent>() != nullptr)
@@ -68,7 +70,7 @@ namespace Core
 					std::cout << "GameObject already has one CameraComponent\n";
 					return;
 				}
-				m_components.emplace_back(new T(*this, p_args ...));
+				m_components.emplace_back(std::make_shared<T>(*this, p_args ...));
 			}
 			catch (...)
 			{

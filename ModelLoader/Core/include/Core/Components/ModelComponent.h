@@ -11,7 +11,8 @@ namespace Core::Components
 	public:
 		ModelComponent(GameObject& p_gameObject);
 		ModelComponent(GameObject& p_gameObject, const char* p_path);
-		~ModelComponent();
+		ModelComponent(Core::GameObject& p_gameObject, Rendering::Resources::Model* p_model);
+		~ModelComponent() = default;
 		ModelComponent(const ModelComponent& p_other);
 
 		const std::string& GetType() const override;
@@ -20,8 +21,8 @@ namespace Core::Components
 		Rendering::Resources::Model* GetModel();
 
 	private:
-		std::string m_type = "ModelComponent";
-		Rendering::Resources::Model* m_model;
 		Core::GameObject& m_gameObject;
+		Rendering::Resources::Model* m_model;
+		std::string m_type = "ModelComponent";
 	};
 }

@@ -1,17 +1,21 @@
 #include <stdafx.h>
 #include <Rendering/Resources/Mesh.h>
 
-Rendering::Resources::Mesh::Mesh(const std::vector<Geometry::Vertex>& p_vertices, const std::vector<uint32_t>& p_indices) noexcept
-	: m_vertexCount{ static_cast<uint32_t>(p_vertices.size()) }, m_indicesCount{ static_cast<uint32_t>(p_indices.size()) }
+Rendering::Resources::Mesh::Mesh(std::vector<Geometry::Vertex>& p_vertices, std::vector<uint32_t>& p_indices) noexcept
+	: m_vertexCount{ static_cast<uint32_t>(p_vertices.size()) }, m_indicesCount{ static_cast<uint32_t>(p_indices.size()) },
+	m_vertices{ p_vertices }, m_indices{ p_indices }
 {
-	m_vertexArray = new Buffers::VertexArray();
 	m_texture = new Texture();
-	CreateBuffers(p_vertices, p_indices);
 }
 
 Rendering::Resources::Mesh::~Mesh() noexcept
 {
-	// TODO: delete
+	delete m_vertexArray;
+	delete m_vboPosition;
+	delete m_vboTextCoords;
+	delete m_vboNormal;
+	delete m_indexBuffer;
+	delete m_texture;
 }
 
 void Rendering::Resources::Mesh::AddTexture(const std::string& p_texturePath)
@@ -43,16 +47,16 @@ const uint32_t Rendering::Resources::Mesh::GetIndicesCount() const noexcept
 	return m_indicesCount;
 }
 
-void Rendering::Resources::Mesh::CreateBuffers(const std::vector<Geometry::Vertex>& p_vertices,
-	                                           const std::vector<uint32_t>& p_indices) noexcept
+void Rendering::Resources::Mesh::CreateBuffers() noexcept
 {
+	m_vertexArray = new Buffers::VertexArray();
 	m_vertexArray->Bind();
 
 	std::vector<float> rawPositions{};
 	std::vector<float> rawTextCoords{};
 	std::vector<float> rawNormals{};
 
-	for (const auto& vertex: p_vertices)
+	for (const auto& vertex: m_vertices)
 	{
 		// Position
 		rawPositions.push_back(vertex.m_position[0]);
@@ -74,11 +78,11 @@ void Rendering::Resources::Mesh::CreateBuffers(const std::vector<Geometry::Verte
 	m_vboTextCoords = new Buffers::VertexBuffer(rawTextCoords);
 	m_vboNormal = new Buffers::VertexBuffer(rawNormals);
 
-	m_indexBuffer = new Buffers::IndexBuffer(p_indices);
+	m_indexBuffer = new Buffers::IndexBuffer(m_indices);
 
-	m_vertexArray->AddBuffer(*m_vboPosition, 3, Buffers::GLType::FLOAT);
-	m_vertexArray->AddBuffer(*m_vboTextCoords, 2, Buffers::GLType::FLOAT);
-	m_vertexArray->AddBuffer(*m_vboNormal, 3, Buffers::GLType::FLOAT);
+	m_vertexArray->AddBuffer(m_vboPosition, 3, Buffers::GLType::FLOAT);
+	m_vertexArray->AddBuffer(m_vboTextCoords, 2, Buffers::GLType::FLOAT);
+	m_vertexArray->AddBuffer(m_vboNormal, 3, Buffers::GLType::FLOAT);
 
     m_vertexArray->Unbind();
 

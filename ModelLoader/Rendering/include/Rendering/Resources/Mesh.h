@@ -19,7 +19,7 @@ namespace Rendering::Resources
 	{
 	public:
 		Mesh() = default;
-		Mesh(const std::vector<Geometry::Vertex>& p_vertices, const std::vector<uint32_t>& p_indices) noexcept;
+		Mesh(std::vector<Geometry::Vertex>& p_vertices, std::vector<uint32_t>& p_indices) noexcept;
 		~Mesh() noexcept;
 
 		void AddTexture(const std::string & p_texturePath);
@@ -32,7 +32,7 @@ namespace Rendering::Resources
 		bool GetQuad() const noexcept { return m_quad; }
 		Texture* GetTexture() { return m_texture; };
 
-		void CreateBuffers(const std::vector<Geometry::Vertex>& p_vertices, const std::vector<uint32_t>& p_indices) noexcept;
+		void CreateBuffers() noexcept;
 
 		void SetVertexArray(Buffers::VertexArray* p_vertexArray) { m_vertexArray = p_vertexArray; }
 		void SetQuad(bool p_quad) { m_quad = p_quad; }
@@ -47,6 +47,8 @@ namespace Rendering::Resources
 		Buffers::VertexBuffer* m_vboTextCoords;
 		Buffers::VertexBuffer* m_vboNormal;
 		Buffers::IndexBuffer* m_indexBuffer;
+		std::vector<Geometry::Vertex> m_vertices;
+		std::vector<uint32_t> m_indices;
 		Texture* m_texture;
 	};
 }

@@ -16,7 +16,7 @@ namespace Rendering::Resources
         Model(const char* p_modelPath,
               const std::string& p_vertexFilepath,
               const std::string& p_fragmentFilepath) noexcept;
-
+		Model(Mesh* p_mesh);
         Model(const Model& p_other) noexcept;
 
 		void AddTexture(const std::string & p_texturePath) const;
@@ -30,8 +30,13 @@ namespace Rendering::Resources
         void Bind() const noexcept;
         void Unbind() const noexcept;
 
+        void LoadShader(
+            const std::string& p_vertexFilepath =
+                    "../rsc/shaders/defaultShader.vert",
+            const std::string& p_fragmentFilepath =
+                    "../rsc/shaders/defaultShader.frag") noexcept;
     private:
-        std::string             m_directory;
+        std::string m_directory;
         Shader* m_shader;
         Mesh*   m_mesh;
 
@@ -43,10 +48,5 @@ namespace Rendering::Resources
          * @param p_vertexFilepath : Vertex Shader to load.
          * @param p_fragmentFilepath : Fragment Shader to load.
         **/
-        void LoadShader(
-            const std::string& p_vertexFilepath =
-                    "../rsc/shaders/defaultShader.vert",
-            const std::string& p_fragmentFilepath =
-                    "../rsc/shaders/defaultShader.frag") noexcept;
     };
 }

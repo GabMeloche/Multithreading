@@ -3,7 +3,7 @@
 
 Rendering::Resources::Mesh* Rendering::Resources::Loaders::MeshLoader::MakeCube() noexcept
 {
-	const std::vector<Geometry::Vertex> vertices
+	std::vector<Geometry::Vertex> vertices
 	{
 		{{-0.5f, -0.5f, -0.5f}, {0.0f, 0.0f}, {-1.0f, +0.0f, +0.0f}},
 		{{+0.5f, -0.5f, -0.5f}, {1.0f, 0.0f}, {-1.0f, +1.0f, +0.0f}},
@@ -48,7 +48,7 @@ Rendering::Resources::Mesh* Rendering::Resources::Loaders::MeshLoader::MakeCube(
 		{{-0.5f, +0.5f, -0.5f}, {0.0f, 1.0f}, {+0.0f, +0.0f, +1.0f}},
 	};
 
-	const std::vector<uint32_t> indices
+	std::vector<uint32_t> indices
 	{
 		0, 1, 2, 3, 4, 5,
 		6, 7, 8, 9, 10, 11,

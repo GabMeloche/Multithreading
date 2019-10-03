@@ -29,15 +29,15 @@ const GLuint& VertexArray::GetId() const noexcept
 	return m_id;
 }
 
-void VertexArray::AddBuffer(const VertexBuffer& p_buffer, const size_t& p_countElements, const GLType& p_type) noexcept
+void VertexArray::AddBuffer(const VertexBuffer* p_buffer, const size_t& p_countElements, const GLType& p_type) noexcept
 {
 	Bind();
-	p_buffer.Bind();
+	p_buffer->Bind();
 
 	glEnableVertexAttribArray(m_availableLocation);
 	glVertexAttribPointer(m_availableLocation, static_cast<GLint>(p_countElements), static_cast<GLenum>(p_type), GL_FALSE, 0, nullptr);
 
-	p_buffer.Unbind();
+	p_buffer->Unbind();
 	Unbind();
 
 	++m_availableLocation;
