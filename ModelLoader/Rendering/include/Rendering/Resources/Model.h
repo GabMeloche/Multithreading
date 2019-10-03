@@ -21,19 +21,19 @@ namespace Rendering::Resources
 
 		void AddTexture(const std::string & p_texturePath) const;
 
-        std::shared_ptr<Mesh>& GetMesh() noexcept { return m_mesh; }
+        Mesh* GetMesh() noexcept { return m_mesh; }
 
-        std::shared_ptr<Shader>& GetShader() noexcept { return m_shader; }
+        Shader* GetShader() noexcept { return m_shader; }
 
-		std::shared_ptr<Texture>& GetTexture() noexcept { return m_mesh->GetTexture(); };
+		Texture* GetTexture() noexcept { return m_mesh->GetTexture(); };
 
         void Bind() const noexcept;
         void Unbind() const noexcept;
 
     private:
         std::string             m_directory;
-        std::shared_ptr<Shader> m_shader;
-        std::shared_ptr<Mesh>   m_mesh;
+        Shader* m_shader;
+        Mesh*   m_mesh;
 
         /*  Functions   */
         void LoadModel(const char* path) noexcept;

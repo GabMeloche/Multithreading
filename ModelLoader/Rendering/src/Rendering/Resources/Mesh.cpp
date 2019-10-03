@@ -4,9 +4,14 @@
 Rendering::Resources::Mesh::Mesh(const std::vector<Geometry::Vertex>& p_vertices, const std::vector<uint32_t>& p_indices) noexcept
 	: m_vertexCount{ static_cast<uint32_t>(p_vertices.size()) }, m_indicesCount{ static_cast<uint32_t>(p_indices.size()) }
 {
-	m_vertexArray = std::make_shared<Buffers::VertexArray>();
-	m_texture = std::make_shared<Texture>();
+	m_vertexArray = new Buffers::VertexArray();
+	m_texture = new Texture();
 	CreateBuffers(p_vertices, p_indices);
+}
+
+Rendering::Resources::Mesh::~Mesh() noexcept
+{
+	// TODO: delete
 }
 
 void Rendering::Resources::Mesh::AddTexture(const std::string& p_texturePath)
@@ -65,11 +70,11 @@ void Rendering::Resources::Mesh::CreateBuffers(const std::vector<Geometry::Verte
 	}
 
 	// Buffer gen
-	m_vboPosition = std::make_unique<Buffers::VertexBuffer>(rawPositions);
-	m_vboTextCoords = std::make_unique<Buffers::VertexBuffer>(rawTextCoords);
-	m_vboNormal = std::make_unique<Buffers::VertexBuffer>(rawNormals);
+	m_vboPosition = new Buffers::VertexBuffer(rawPositions);
+	m_vboTextCoords = new Buffers::VertexBuffer(rawTextCoords);
+	m_vboNormal = new Buffers::VertexBuffer(rawNormals);
 
-	m_indexBuffer = std::make_unique<Buffers::IndexBuffer>(p_indices);
+	m_indexBuffer = new Buffers::IndexBuffer(p_indices);
 
 	m_vertexArray->AddBuffer(*m_vboPosition, 3, Buffers::GLType::FLOAT);
 	m_vertexArray->AddBuffer(*m_vboTextCoords, 2, Buffers::GLType::FLOAT);

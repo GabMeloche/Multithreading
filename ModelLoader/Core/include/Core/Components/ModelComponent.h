@@ -16,12 +16,12 @@ namespace Core::Components
 
 		const std::string& GetType() const override;
 		void Update() override;
-		const std::shared_ptr<Rendering::Resources::Mesh>& GetMesh() const;
-		const std::shared_ptr<Rendering::Resources::Model>& GetModel() const;
+		Rendering::Resources::Mesh* GetMesh();
+		Rendering::Resources::Model* GetModel();
 
 	private:
 		std::string m_type = "ModelComponent";
-		std::shared_ptr<Rendering::Resources::Model> m_model;
+		Rendering::Resources::Model* m_model;
 		Core::GameObject& m_gameObject;
 	};
 }

@@ -14,11 +14,12 @@ ModelComponent::ModelComponent(Core::GameObject& p_gameObject) : m_gameObject{ p
 ModelComponent::ModelComponent(Core::GameObject& p_gameObject, const char* p_path) : m_gameObject { p_gameObject }
 {
 	//m_model = &Rendering::Resources::Model(p_path);
-	m_model = std::make_unique<Rendering::Resources::Model>(Rendering::Resources::Model(p_path));
+	m_model = new Rendering::Resources::Model(p_path);
 }
 
 ModelComponent::~ModelComponent()
 {
+	delete m_model;
 }
 
 ModelComponent::ModelComponent(const ModelComponent & p_other) : m_gameObject{ p_other.m_gameObject }
@@ -46,12 +47,12 @@ void Core::Components::ModelComponent::Update()
 	m_model->GetShader()->Unbind();
 }
 
-const std::shared_ptr<Rendering::Resources::Mesh>& ModelComponent::GetMesh() const
+Rendering::Resources::Mesh* ModelComponent::GetMesh()
 {
 	return m_model->GetMesh();
 }
 
-const std::shared_ptr<Rendering::Resources::Model>& ModelComponent::GetModel() const
+Rendering::Resources::Model* ModelComponent::GetModel()
 {
 	return m_model;
 }

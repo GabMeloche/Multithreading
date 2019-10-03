@@ -24,7 +24,7 @@ namespace Rendering::Managers
 		void Clear() const noexcept;
 		void PolygonModeLine() noexcept;
 		void PolygonModeFill() noexcept;
-		void Draw(Resources::Model& p_model) const noexcept;
+		void Draw(Resources::Model* p_model) const noexcept;
 
 		bool IsDrawFilled() const;
 	private:

@@ -36,7 +36,7 @@ void Core::Scene::DrawAll(Rendering::Managers::Renderer& p_renderer)
 		if (gameObject.second->GetComponent<Components::ModelComponent>() == nullptr)
 			continue;
 
-		p_renderer.Draw(*gameObject.second->GetComponent<Components::ModelComponent>()->GetModel());
+		p_renderer.Draw(gameObject.second->GetComponent<Components::ModelComponent>()->GetModel());
 	}
 }
 

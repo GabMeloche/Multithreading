@@ -29,12 +29,12 @@ int main()
 	Core::GameManager gameManager(renderer.get());
 	Rendering::LowRenderer::Camera mainCamera;
 
-	std::shared_ptr<Core::GameObject> object1 = std::make_shared<Core::GameObject>();
+	std::shared_ptr<Core::GameObject> statue = std::make_shared<Core::GameObject>();
 	std::shared_ptr<Core::GameObject> car = std::make_shared<Core::GameObject>();
     std::shared_ptr<Core::GameObject> player = std::make_shared<Core::GameObject>();
 	Core::Scene scene1{};
 
-	//object1->AddComponent<Core::Components::ModelComponent>("../rsc/models/mannequin.fbx");
+	statue->AddComponent<Core::Components::ModelComponent>("../rsc/models/statue.obj");
 	//car->AddComponent<Core::Components::ModelComponent>("../rsc/models/standard_car.fbx");
 	player->AddComponent<Core::Components::ModelComponent>("../rsc/models/Cube.obj");
 	glm::vec3 distanceFromPlayer(0.0f, 0.2f, 0.0f);
@@ -43,7 +43,7 @@ int main()
 	//player->AddComponent<Core::Components::ModelComponent>("../rsc/models/mannequin.fbx");
 	player->AddTexture("../rsc/textures/brick.png");
 
-	//scene1.AddGameObject(object1, "object1");
+	scene1.AddGameObject(statue, "statue");
 	//scene1.AddGameObject(car, "car");
 	scene1.AddGameObject(player, "player");
 
@@ -62,7 +62,7 @@ int main()
 	glm::vec3 rota3 = glm::vec3(0, 0, 0);
 	glm::vec3 scale3 = glm::vec3(0.005f, 0.005f, 0.005f);
 
-	//gameManager.GetActiveScene().FindGameObject("object1")->SetTransform(newPos, rota, scale);
+	gameManager.GetActiveScene().FindGameObject("statue")->SetTransform(newPos, rota, scale);
 	//gameManager.GetActiveScene().FindGameObject("car")->SetTransform(newPos2, rota2, scale2);
 	gameManager.GetActiveScene().FindGameObject("player")->SetTransform(newPos3, rota3, scale3);
 

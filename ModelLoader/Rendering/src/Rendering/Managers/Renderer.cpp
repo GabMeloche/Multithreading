@@ -22,18 +22,18 @@ void Rendering::Managers::Renderer::PolygonModeFill() noexcept
 }
 
 void Rendering::Managers::Renderer::Draw(
-    Resources::Model& p_model) const noexcept
+    Resources::Model* p_model) const noexcept
 {
     glCullFace(GL_BACK);
     glEnable(GL_CULL_FACE);
     glEnable(GL_DEPTH_TEST);
 
-    p_model.Bind();
+    p_model->Bind();
 
-    if (p_model.GetMesh()->GetIndicesCount() > 0)
+    if (p_model->GetMesh()->GetIndicesCount() > 0)
     {
     	//if (!p_model.GetMesh()->GetQuad())
-			glDrawElements(GL_TRIANGLES, p_model.GetMesh()->GetIndicesCount(),
+			glDrawElements(GL_TRIANGLES, p_model->GetMesh()->GetIndicesCount(),
                        GL_UNSIGNED_INT, 0);
 		/*else
 			glDrawElements(GL_QUADS, p_model.GetMesh()->GetIndicesCount(),
@@ -42,12 +42,12 @@ void Rendering::Managers::Renderer::Draw(
     else
     {
     	//if (!p_model.GetMesh()->GetQuad())
-			glDrawArrays(GL_TRIANGLES, 0, p_model.GetMesh()->GetVertexCount());
+			glDrawArrays(GL_TRIANGLES, 0, p_model->GetMesh()->GetVertexCount());
     	/*else
 			glDrawArrays(GL_QUADS, 0, p_model.GetMesh()->GetVertexCount());*/
     }
 
-    p_model.Unbind();
+    p_model->Unbind();
 }
 
 bool Rendering::Managers::Renderer::IsDrawFilled() const

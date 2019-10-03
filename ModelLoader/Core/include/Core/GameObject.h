@@ -3,6 +3,7 @@
 #include <Rendering/Resources/Transform.h>
 #include <vector>
 #include <iostream>
+#include <any>
 
 namespace Core
 {
@@ -23,10 +24,10 @@ namespace Core
 		void SetTransform(glm::vec3 & p_pos, glm::vec3 & p_rot, glm::vec3 & p_scale);
 		void SetTransform(Rendering::Resources::Transform & p_transform);
 
-		void AddTexture(const std::string & p_texturePath) const;
+		void AddTexture(const std::string & p_texturePath);
 		void UpdateAllComponents();
 		void UpdateShaders();
-		void RecompileShaders() const;
+		void RecompileShaders();
 
 		//make into variadic template
 		template<typename T>
@@ -44,7 +45,7 @@ namespace Core
 					std::cout << "GameObject already has one CameraComponent\n";
 					return;
 				}
-				m_components.emplace_back(std::make_shared<T>(p_component));
+				m_components.emplace_back(new T(p_component));
 			}
 			catch (...)
 			{
@@ -67,7 +68,7 @@ namespace Core
 					std::cout << "GameObject already has one CameraComponent\n";
 					return;
 				}
-				m_components.emplace_back(std::make_shared<T>(*this, p_args ...));
+				m_components.emplace_back(new T(*this, p_args ...));
 			}
 			catch (...)
 			{
@@ -76,11 +77,11 @@ namespace Core
 		}
 
         template<typename T>
-        [[nodiscard]] std::shared_ptr<T> GetComponent() const noexcept
+        [[nodiscard]] std::shared_ptr<T> GetComponent()
         {
             static_assert(std::is_base_of_v<Components::IComponent, T>);
 
-			for (auto& component : m_components)
+			for (const auto& component : m_components)
 			{
 				if (typeid(*component) == typeid(T))
 				{
@@ -91,7 +92,7 @@ namespace Core
             return {};
         }
 
-		std::vector<std::shared_ptr<Core::Components::IComponent>>& GetComponents();
+		std::vector<std::shared_ptr<Components::IComponent>>& GetComponents();
 
 	private:
 		std::vector<std::shared_ptr<Core::Components::IComponent>> m_components;

@@ -35,13 +35,13 @@ void Core::GameObject::SetTransform(Rendering::Resources::Transform& p_transform
 	m_transform = p_transform;
 }
 
-void GameObject::AddTexture(const std::string& p_texturePath) const
+void GameObject::AddTexture(const std::string& p_texturePath)
 {
 	if (GetComponent<Core::Components::ModelComponent>() == nullptr)
 		return;
 
-	Rendering::Resources::Model& model = *GetComponent<Core::Components::ModelComponent>()->GetModel();
-	model.AddTexture(p_texturePath);
+	Rendering::Resources::Model* model = GetComponent<Core::Components::ModelComponent>()->GetModel();
+	model->AddTexture(p_texturePath);
 }
 
 void Core::GameObject::UpdateAllComponents()
@@ -58,8 +58,8 @@ void Core::GameObject::UpdateShaders()
 	glm::mat4 projection = Rendering::LowRenderer::Camera::GetInstance()->GetProjectionMatrix();
 	glm::mat4 view = Rendering::LowRenderer::Camera::GetInstance()->GetViewMatrix();
 
-	Rendering::Resources::Model& model = *GetComponent<Core::Components::ModelComponent>()->GetModel();
-	Rendering::Resources::Shader& shader = *model.GetShader();
+	Rendering::Resources::Model* model = GetComponent<Core::Components::ModelComponent>()->GetModel();
+	Rendering::Resources::Shader* shader = model->GetShader();
 
 	glm::mat4 modelMatrix = m_transform.GetModelMatrix();
 
@@ -72,34 +72,34 @@ void Core::GameObject::UpdateShaders()
 	lights.Direction = glm::normalize(glm::vec3(-0.5f, -0.5f, -0.5f));
 	lights.Specular = glm::vec3(1.0f, 1.0f, 0.95f);
 
-	shader.Bind();
-	shader.SetUniformMatrix4fv("modelMatrix", modelMatrix);
-	shader.SetUniformMatrix4fv("projectionMatrix", projection);
-	shader.SetUniformMatrix4fv("viewMatrix", view);
-	shader.SetUniform3f("ViewPos", cameraPos.x, cameraPos.y, cameraPos.z);
+	shader->Bind();
+	shader->SetUniformMatrix4fv("modelMatrix", modelMatrix);
+	shader->SetUniformMatrix4fv("projectionMatrix", projection);
+	shader->SetUniformMatrix4fv("viewMatrix", view);
+	shader->SetUniform3f("ViewPos", cameraPos.x, cameraPos.y, cameraPos.z);
 	//shader.SetUniform3f("lightSource.Position", lights.Position.x, lights.Position.y, lights.Position.z);
-	shader.SetUniform3f("lightSource.Diffuse", lights.Diffuse.x, lights.Diffuse.y, lights.Diffuse.z);
-	shader.SetUniform3f("lightSource.Direction", lights.Direction.x, lights.Direction.y, lights.Direction.z);
-	shader.SetUniform3f("lightSource.Specular", lights.Specular.x, lights.Specular.y, lights.Specular.z);
-	if (model.GetTexture()->IsTextureSet())
+	shader->SetUniform3f("lightSource.Diffuse", lights.Diffuse.x, lights.Diffuse.y, lights.Diffuse.z);
+	shader->SetUniform3f("lightSource.Direction", lights.Direction.x, lights.Direction.y, lights.Direction.z);
+	shader->SetUniform3f("lightSource.Specular", lights.Specular.x, lights.Specular.y, lights.Specular.z);
+	if (model->GetTexture()->IsTextureSet())
 	{
-		shader.SetBool("useTexture", true);
-		shader.SetInt("objectTexture", 1);
+		shader->SetBool("useTexture", true);
+		shader->SetInt("objectTexture", 1);
 	}
 	else
 	{
-		shader.SetBool("useTexture", false);
+		shader->SetBool("useTexture", false);
 	}
-	shader.Unbind();
+	shader->Unbind();
 
 
 }
 
-void GameObject::RecompileShaders() const
+void GameObject::RecompileShaders()
 {
 	if (GetComponent<Core::Components::ModelComponent>() == nullptr)
 		return;
 
-	Rendering::Resources::Shader& shader = *GetComponent<Core::Components::ModelComponent>()->GetModel()->GetShader();
-	shader.RecompileShader();
+	Rendering::Resources::Shader* shader = GetComponent<Core::Components::ModelComponent>()->GetModel()->GetShader();
+	shader->RecompileShader();
 }
