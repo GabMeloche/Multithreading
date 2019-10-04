@@ -6,6 +6,8 @@
 #include <Rendering/Geometry/Vertex.h>
 #include <Rendering/Resources/Mesh.h>
 #include <Rendering/Resources/Loaders/ShaderLoader.h>
+#include <thread>
+#include <mutex>
 
 #pragma warning(disable: 4996)
 
@@ -19,6 +21,7 @@ Rendering::Resources::Model::Model(const char* p_modelPath,
 	const std::string& p_vertexFilepath,
 	const std::string& p_fragmentFilepath) noexcept
 {
+
 	LoadModel(p_modelPath);
 	//LoadShader(p_vertexFilepath.c_str(), p_fragmentFilepath);
 }
@@ -49,7 +52,7 @@ void Rendering::Resources::Model::LoadModel(const char* filename) noexcept
 	std::vector<glm::vec3> tmp_vertex;
 	std::vector<glm::vec2> tmp_uv;
 	std::vector<glm::vec3> tmp_normal;
-	
+
 	std::ifstream in(filename);
 	
 	if (!in)
@@ -126,6 +129,12 @@ void Rendering::Resources::Model::LoadModel(const char* filename) noexcept
 	}
 	m_mesh = new Mesh(vertices, faceIndex);
 	m_mesh->SetQuad(isQuad);
+}
+
+Rendering::Resources::Model Rendering::Resources::Model::StaticLoadModel(const char* path)
+{
+	Model m(path);
+	return m;
 }
 
 void Rendering::Resources::Model::LoadShader(const std::string& p_vertexFilepath,

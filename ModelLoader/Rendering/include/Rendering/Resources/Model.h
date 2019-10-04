@@ -5,6 +5,7 @@
 #include <vector>
 #include <string>
 #include <memory>
+#include <atomic>
 
 namespace Rendering::Resources
 {
@@ -29,6 +30,7 @@ namespace Rendering::Resources
 
         void Bind() const noexcept;
         void Unbind() const noexcept;
+		static Model StaticLoadModel(const char* path);
 
         void LoadShader(
             const std::string& p_vertexFilepath =
@@ -42,7 +44,6 @@ namespace Rendering::Resources
 
         /*  Functions   */
         void LoadModel(const char* path) noexcept;
-
         /**
          * @brief Method who can lod a shader. If no parameters are send, it loads both the default vertex and fragment shader.
          * @param p_vertexFilepath : Vertex Shader to load.

@@ -48,5 +48,6 @@
     <ClInclude Include="include\Rendering\Managers\InputManager.h" />
     <ClInclude Include="include\Rendering\LowRenderer\Light.h" />
     <ClInclude Include="include\Rendering\Resources\Texture.h" />
+    <ClInclude Include="include\Rendering\Resources\Loaders\ResourceLoader.h" />
   </ItemGroup>
 </Project>

@@ -18,6 +18,7 @@
 #include <Core/Components/ModelComponent.h>
 #include <Core/Components/CameraComponent.h>
 #include <Core/ResourceManager.h>
+#include <chrono>
 #include <thread>
 
 int main()
@@ -34,15 +35,21 @@ int main()
 	std::shared_ptr<Core::GameObject> statue = std::make_shared<Core::GameObject>();
 	std::shared_ptr<Core::GameObject> table = std::make_shared<Core::GameObject>();
     std::shared_ptr<Core::GameObject> player = std::make_shared<Core::GameObject>();
+    std::shared_ptr<Core::GameObject> gun = std::make_shared<Core::GameObject>();
+	
 	Core::Scene scene1{};
-
 	ResourceManager resourceMgr{};
+	auto start = std::chrono::high_resolution_clock::now();
 	std::thread t1{ &ResourceManager::AddModel, std::ref(resourceMgr), "../rsc/models/statue.obj" };
 	t1.join();
 	std::thread t2{ &ResourceManager::AddModel, std::ref(resourceMgr),"../rsc/models/TigerTank.obj" };
 	t2.join();
 	std::thread t3{ &ResourceManager::AddModel, std::ref(resourceMgr),"../rsc/models/BarrocMiniTable.obj" };
 	t3.join();
+	
+	auto end = std::chrono::high_resolution_clock::now();
+	std::chrono::duration<double> elapsed = end - start;
+	
 	/*resourceMgr.AddModel("../rsc/models/statue.obj");
 	resourceMgr.AddModel("../rsc/models/Cube.obj");*/
 	resourceMgr.GetModels()[0]->GetMesh()->CreateBuffers();
@@ -55,6 +62,9 @@ int main()
 	statue->AddComponent<Core::Components::ModelComponent>(resourceMgr.GetModels()[0]);
 	player->AddComponent<Core::Components::ModelComponent>(resourceMgr.GetModels()[1]);
 	table->AddComponent<Core::Components::ModelComponent>(resourceMgr.GetModels()[2]);
+
+
+	std::cout << "time to load all objects: " << elapsed.count() << std::endl;
 	
 	glm::vec3 distanceFromPlayer(0.0f, 0.2f, 0.0f);
 	player->AddComponent<Core::Components::CameraComponent>(distanceFromPlayer);
@@ -97,9 +107,9 @@ int main()
 		// ##### Update #####
 		gameManager.Update();
 
-		gameManager.GetActiveScene().FindGameObject("player")->SetTransform(newPos3, rota3, scale3);
+		/*gameManager.GetActiveScene().FindGameObject("player")->SetTransform(newPos3, rota3, scale3);
 		rota3.x += 1;
-		rota3.y += 1;
+		rota3.y += 1;*/
 		// ##### Drawing #####
 		gameManager.DrawActiveScene(*renderer);
 		device->Render();

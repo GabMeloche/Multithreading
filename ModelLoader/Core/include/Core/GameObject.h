@@ -30,7 +30,7 @@ namespace Core
 		void RecompileShaders();
 
 		//make into variadic template
-		template<typename T>
+		/*template<typename T>
 		void AddComponent(T p_component)
 		{
 			try
@@ -51,7 +51,7 @@ namespace Core
 			{
 				std::cout << "AddComponent didn't work\n";
 			}
-		}
+		}*/
 
 		template<typename T, typename ... args>
 		void AddComponent(args ... p_args)
