@@ -29,6 +29,7 @@ namespace Rendering::Resources
 
 		const uint32_t GetVertexCount() const noexcept;
 		const uint32_t GetIndicesCount() const noexcept;
+		const Buffers::VertexArray* GetVertexArray() const { return m_vertexArray; }
 		bool GetQuad() const noexcept { return m_quad; }
 		Texture* GetTexture() { return m_texture; };
 

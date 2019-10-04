@@ -40,18 +40,19 @@ int main()
 	Core::Scene scene1{};
 	ResourceManager resourceMgr{};
 	auto start = std::chrono::high_resolution_clock::now();
-	std::thread t1{ &ResourceManager::AddModel, std::ref(resourceMgr), "../rsc/models/statue.obj" };
-	t1.join();
-	std::thread t2{ &ResourceManager::AddModel, std::ref(resourceMgr),"../rsc/models/TigerTank.obj" };
-	t2.join();
-	std::thread t3{ &ResourceManager::AddModel, std::ref(resourceMgr),"../rsc/models/BarrocMiniTable.obj" };
-	t3.join();
+	
+	std::promise <Rendering::Resources::Model*> promise;
+	// vector future
+	// handshake
+	
+	resourceMgr.AddModel("../rsc/models/statue.obj");
+	resourceMgr.AddModel("../rsc/models/TigerTank.obj");
+	resourceMgr.AddModel("../rsc/models/BarrocMiniTable.obj");
+	resourceMgr.WaitLoad();
 	
 	auto end = std::chrono::high_resolution_clock::now();
 	std::chrono::duration<double> elapsed = end - start;
 	
-	/*resourceMgr.AddModel("../rsc/models/statue.obj");
-	resourceMgr.AddModel("../rsc/models/Cube.obj");*/
 	resourceMgr.GetModels()[0]->GetMesh()->CreateBuffers();
 	resourceMgr.GetModels()[0]->LoadShader();
 	resourceMgr.GetModels()[1]->GetMesh()->CreateBuffers();

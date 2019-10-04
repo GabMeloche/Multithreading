@@ -11,7 +11,7 @@ ModelComponent::ModelComponent(Core::GameObject& p_gameObject) : m_gameObject{ p
 	m_type = "Model";
 }
 
-ModelComponent::ModelComponent(Core::GameObject& p_gameObject, const char* p_path) : m_gameObject { p_gameObject }
+ModelComponent::ModelComponent(Core::GameObject& p_gameObject, const char* p_path) : m_gameObject{ p_gameObject }
 {
 	m_model = new Rendering::Resources::Model(p_path);
 }
@@ -19,7 +19,7 @@ ModelComponent::ModelComponent(Core::GameObject& p_gameObject, const char* p_pat
 Core::Components::ModelComponent::ModelComponent(Core::GameObject& p_gameObject, Rendering::Resources::Model* p_model) :
 	m_gameObject{ p_gameObject }, m_model{ p_model } {}
 
-ModelComponent::ModelComponent(const ModelComponent & p_other) : m_gameObject{ p_other.m_gameObject }
+ModelComponent::ModelComponent(const ModelComponent& p_other) : m_gameObject{ p_other.m_gameObject }
 {
 	m_type = p_other.m_type;
 	m_model = p_other.m_model;
@@ -37,11 +37,14 @@ void Core::Components::ModelComponent::Update()
 
 	glm::mat4 modelMatrix = m_gameObject.GetTransform().GetModelMatrix();
 
-	m_model->GetShader()->Bind();
-	m_model->GetShader()->SetUniformMatrix4fv("modelMatrix", modelMatrix);
-	m_model->GetShader()->SetUniformMatrix4fv("projectionMatrix", projection);
-	m_model->GetShader()->SetUniformMatrix4fv("viewMatrix", view);
-	m_model->GetShader()->Unbind();
+	if (m_model->GetShader())
+	{
+		m_model->GetShader()->Bind();
+		m_model->GetShader()->SetUniformMatrix4fv("modelMatrix", modelMatrix);
+		m_model->GetShader()->SetUniformMatrix4fv("projectionMatrix", projection);
+		m_model->GetShader()->SetUniformMatrix4fv("viewMatrix", view);
+		m_model->GetShader()->Unbind();
+	}
 }
 
 Rendering::Resources::Mesh* ModelComponent::GetMesh()

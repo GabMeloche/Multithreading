@@ -6,48 +6,42 @@
 
 void Rendering::Managers::Renderer::Clear() const noexcept
 {
-    m_driver->Clear();
+	m_driver->Clear();
 }
 
 void Rendering::Managers::Renderer::PolygonModeLine() noexcept
 {
 	m_fillDrawIsOn = false;
-    m_driver->PolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	m_driver->PolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 }
 
 void Rendering::Managers::Renderer::PolygonModeFill() noexcept
 {
 	m_fillDrawIsOn = true;
-    m_driver->PolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+	m_driver->PolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 }
 
 void Rendering::Managers::Renderer::Draw(
-    Resources::Model* p_model) const noexcept
+	Resources::Model* p_model) const noexcept
 {
-    glCullFace(GL_BACK);
-    glEnable(GL_CULL_FACE);
-    glEnable(GL_DEPTH_TEST);
+	glCullFace(GL_BACK);
+	glEnable(GL_CULL_FACE);
+	glEnable(GL_DEPTH_TEST);
 
-    p_model->Bind();
+	p_model->Bind();
 
-    if (p_model->GetMesh()->GetIndicesCount() > 0)
-    {
-    	//if (!p_model.GetMesh()->GetQuad())
-			glDrawElements(GL_TRIANGLES, p_model->GetMesh()->GetIndicesCount(),
-                       GL_UNSIGNED_INT, 0);
-		/*else
-			glDrawElements(GL_QUADS, p_model.GetMesh()->GetIndicesCount(),
-				GL_UNSIGNED_INT, 0);*/
-    }
-    else
-    {
-    	//if (!p_model.GetMesh()->GetQuad())
-			glDrawArrays(GL_TRIANGLES, 0, p_model->GetMesh()->GetVertexCount());
-    	/*else
-			glDrawArrays(GL_QUADS, 0, p_model.GetMesh()->GetVertexCount());*/
-    }
+	if (p_model->GetMesh()->GetIndicesCount() > 0)
+	{
+		glDrawElements(GL_TRIANGLES, p_model->GetMesh()->GetIndicesCount(),
+			GL_UNSIGNED_INT, 0);
+	}
+	else
+	{
+		glDrawArrays(GL_TRIANGLES, 0, p_model->GetMesh()->GetVertexCount());
 
-    p_model->Unbind();
+	}
+
+	p_model->Unbind();
 }
 
 bool Rendering::Managers::Renderer::IsDrawFilled() const

@@ -3,6 +3,7 @@
 #include <Core/ResourceManager.h>
 #include <fstream>
 #include <sstream>
+#include <thread>
 
 #pragma warning (disable: 4996)
 
@@ -15,6 +16,26 @@ ResourceManager::~ResourceManager()
 }
 
 void ResourceManager::AddModel(const char* p_path)
+{
+	std::promise<Rendering::Resources::Model*> newPromise;
+	std::future<Rendering::Resources::Model*> newFuture = newPromise.get_future();
+	
+	m_promises.push_back(std::move(newPromise));
+	m_futures.push_back(std::move(newFuture));
+	int index = m_futures.size() - 1;
+	std::thread t{ &ResourceManager::AddModelThread, this, p_path, index };
+	t.detach();
+}
+
+void ResourceManager::WaitLoad()
+{
+	for (auto& future : m_futures)
+	{
+		future.get();
+	}
+}
+
+void ResourceManager::AddModelThread(const char* p_path, int p_promiseIndex)
 {
 	bool isQuad = false;
 	std::vector<Rendering::Geometry::Vertex> vertices;
@@ -95,9 +116,11 @@ void ResourceManager::AddModel(const char* p_path)
 
 	for (unsigned int i = 0; i < faceIndex.size(); ++i)
 	{
-		vertices.emplace_back(Rendering::Geometry::Vertex{ tmp_vertex[i % tmp_vertex.size()], tmp_uv[textureIndex[i]], tmp_normal[normalIndex[i]] });
+		Rendering::Geometry::Vertex vertex{ tmp_vertex[i % tmp_vertex.size()], tmp_uv[textureIndex[i]], tmp_normal[normalIndex[i]] };
+		vertices.push_back(vertex);
 	}
 
 
 	m_models.emplace_back(new Rendering::Resources::Model(new Rendering::Resources::Mesh(vertices, faceIndex)));
+	m_promises[p_promiseIndex].set_value(m_models.back());
 }

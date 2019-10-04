@@ -52,7 +52,7 @@ void Core::GameObject::UpdateAllComponents()
 
 void Core::GameObject::UpdateShaders()
 {
-	if (GetComponent<Core::Components::ModelComponent>() == nullptr)
+	if (!GetComponent<Core::Components::ModelComponent>() || !GetComponent<Core::Components::ModelComponent>()->GetModel()->GetShader())
 		return;
 
 	glm::mat4 projection = Rendering::LowRenderer::Camera::GetInstance()->GetProjectionMatrix();

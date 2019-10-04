@@ -25,9 +25,12 @@ void Rendering::Resources::Mesh::AddTexture(const std::string& p_texturePath)
 
 void Rendering::Resources::Mesh::Bind() const noexcept
 {
-	m_texture->Bind();
-	m_vertexArray->Bind();
-	m_indexBuffer->Bind();
+	if (m_texture)
+		m_texture->Bind();
+	if (m_vertexArray)
+		m_vertexArray->Bind();
+	if (m_indexBuffer)
+		m_indexBuffer->Bind();
 }
 
 void Rendering::Resources::Mesh::Unbind() const noexcept

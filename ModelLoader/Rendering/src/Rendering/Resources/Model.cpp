@@ -14,6 +14,7 @@
 Rendering::Resources::Model::Model(const char* p_path) noexcept
 {
 	LoadModel(p_path);
+	m_shader = nullptr;
 	//LoadShader();
 }
 
@@ -21,13 +22,14 @@ Rendering::Resources::Model::Model(const char* p_modelPath,
 	const std::string& p_vertexFilepath,
 	const std::string& p_fragmentFilepath) noexcept
 {
-
+	m_shader = nullptr;
 	LoadModel(p_modelPath);
 	//LoadShader(p_vertexFilepath.c_str(), p_fragmentFilepath);
 }
 
 Rendering::Resources::Model::Model(Mesh* p_mesh)
 {
+	m_shader = nullptr;
 	m_mesh = p_mesh;
 	//LoadShader();
 }
