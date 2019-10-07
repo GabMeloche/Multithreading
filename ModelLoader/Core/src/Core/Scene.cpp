@@ -33,7 +33,8 @@ void Core::Scene::DrawAll(Rendering::Managers::Renderer& p_renderer)
 
 	for (auto& gameObject : m_allGameObjects)
 	{
-		if (gameObject.second->GetComponent<Components::ModelComponent>() == nullptr)
+		if (!gameObject.second->GetComponent<Components::ModelComponent>() ||
+			!gameObject.second->GetComponent<Components::ModelComponent>()->GetMesh())
 			continue;
 
 		p_renderer.Draw(gameObject.second->GetComponent<Components::ModelComponent>()->GetModel());

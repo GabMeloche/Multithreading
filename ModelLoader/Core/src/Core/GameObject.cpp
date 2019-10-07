@@ -52,7 +52,9 @@ void Core::GameObject::UpdateAllComponents()
 
 void Core::GameObject::UpdateShaders()
 {
-	if (!GetComponent<Core::Components::ModelComponent>() || !GetComponent<Core::Components::ModelComponent>()->GetModel()->GetShader())
+	if (!GetComponent<Core::Components::ModelComponent>() ||
+		!GetComponent<Core::Components::ModelComponent>()->GetModel() ||
+		!GetComponent<Core::Components::ModelComponent>()->GetModel()->GetShader())
 		return;
 
 	glm::mat4 projection = Rendering::LowRenderer::Camera::GetInstance()->GetProjectionMatrix();
@@ -77,7 +79,7 @@ void Core::GameObject::UpdateShaders()
 	shader->SetUniformMatrix4fv("projectionMatrix", projection);
 	shader->SetUniformMatrix4fv("viewMatrix", view);
 	shader->SetUniform3f("ViewPos", cameraPos.x, cameraPos.y, cameraPos.z);
-	//shader.SetUniform3f("lightSource.Position", lights.Position.x, lights.Position.y, lights.Position.z);
+	shader->SetUniform3f("lightSource.Position", lights.Position.x, lights.Position.y, lights.Position.z);
 	shader->SetUniform3f("lightSource.Diffuse", lights.Diffuse.x, lights.Diffuse.y, lights.Diffuse.z);
 	shader->SetUniform3f("lightSource.Direction", lights.Direction.x, lights.Direction.y, lights.Direction.z);
 	shader->SetUniform3f("lightSource.Specular", lights.Specular.x, lights.Specular.y, lights.Specular.z);

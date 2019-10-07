@@ -30,16 +30,13 @@ namespace Rendering::Resources
 		const uint32_t GetVertexCount() const noexcept;
 		const uint32_t GetIndicesCount() const noexcept;
 		const Buffers::VertexArray* GetVertexArray() const { return m_vertexArray; }
-		bool GetQuad() const noexcept { return m_quad; }
 		Texture* GetTexture() { return m_texture; };
 
 		void CreateBuffers() noexcept;
 
 		void SetVertexArray(Buffers::VertexArray* p_vertexArray) { m_vertexArray = p_vertexArray; }
-		void SetQuad(bool p_quad) { m_quad = p_quad; }
 		
 	private:
-		bool m_quad;
 		const uint32_t m_vertexCount{};
 		const uint32_t m_indicesCount{};
 

@@ -42,12 +42,6 @@ namespace Rendering::Resources
         Shader* m_shader;
         Mesh*   m_mesh;
 
-        /*  Functions   */
         void LoadModel(const char* path) noexcept;
-        /**
-         * @brief Method who can lod a shader. If no parameters are send, it loads both the default vertex and fragment shader.
-         * @param p_vertexFilepath : Vertex Shader to load.
-         * @param p_fragmentFilepath : Fragment Shader to load.
-        **/
     };
 }

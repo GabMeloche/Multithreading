@@ -32,6 +32,9 @@ const std::string& ModelComponent::GetType() const
 
 void Core::Components::ModelComponent::Update()
 {
+	if (m_model == nullptr)
+		return;
+	
 	glm::mat4 projection = Rendering::LowRenderer::Camera::GetInstance()->GetProjectionMatrix();
 	glm::mat4 view = Rendering::LowRenderer::Camera::GetInstance()->GetViewMatrix();
 
@@ -49,6 +52,9 @@ void Core::Components::ModelComponent::Update()
 
 Rendering::Resources::Mesh* ModelComponent::GetMesh()
 {
+	if (!m_model)
+		return nullptr;
+	
 	return m_model->GetMesh();
 }
 

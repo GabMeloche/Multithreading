@@ -20,7 +20,6 @@ void ResourceManager::AddModel(const char* p_path, const std::string& p_name)
 {	
 	std::promise<Rendering::Resources::Model*> newPromise;
 	std::future<Rendering::Resources::Model*> newFuture = newPromise.get_future();
-	
 	m_promises.push_back(std::move(newPromise));
 	m_futures.push_back(std::move(newFuture));
 	unsigned int index = m_futures.size() - 1;
@@ -30,7 +29,6 @@ void ResourceManager::AddModel(const char* p_path, const std::string& p_name)
 
 void ResourceManager::AddModelThread(const char* p_path, unsigned int p_promiseIndex, const std::string& p_name)
 {	
-	bool isQuad = false;
 	std::vector<Rendering::Geometry::Vertex> vertices;
 	std::vector<GLuint> faceIndex, textureIndex, normalIndex;
 	std::vector<glm::vec3> tmpVertex;
@@ -124,12 +122,12 @@ void ResourceManager::AddModelThread(const char* p_path, unsigned int p_promiseI
 	end = std::chrono::high_resolution_clock::now();
 	elapsed = end - start;
 	std::cout << p_name << " Time for faceIndex loop: " << elapsed.count() << std::endl;
-
+	
 	start = std::chrono::high_resolution_clock::now();
 	
 	auto model = m_models.try_emplace(p_name, new Rendering::Resources::Model(new Rendering::Resources::Mesh(vertices, faceIndex)));
 	m_promises[p_promiseIndex].set_value(model.first->second);
-
+	
 	end = std::chrono::high_resolution_clock::now();
 	elapsed = end - start;
 	std::cout << p_name << " Time to create new model: " << elapsed.count() << std::endl;
@@ -137,6 +135,11 @@ void ResourceManager::AddModelThread(const char* p_path, unsigned int p_promiseI
 
 void ResourceManager::WaitLoad()
 {
+	/*for (auto& model: m_models)
+	{
+		model.second->GetMesh()->CreateBuffers();
+		model.second->LoadShader();
+	}*/
 	for (auto& future : m_futures)
 	{
 		Rendering::Resources::Model* model = future.get();
