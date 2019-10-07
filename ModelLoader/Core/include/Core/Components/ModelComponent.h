@@ -17,8 +17,8 @@ namespace Core::Components
 
 		const std::string& GetType() const override;
 		void Update() override;
-		Rendering::Resources::Mesh* GetMesh();
-		Rendering::Resources::Model* GetModel();
+		Rendering::Resources::Mesh* GetMesh() const;
+		Rendering::Resources::Model* GetModel() const;
 
 	private:
 		Core::GameObject& m_gameObject;

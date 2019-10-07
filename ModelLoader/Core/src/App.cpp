@@ -50,10 +50,10 @@ int main()
 	auto end = std::chrono::high_resolution_clock::now();
 	std::chrono::duration<double> elapsed = end - start;
 
-	statue->AddComponent<Core::Components::ModelComponent>(resourceMgr.GetModel("statue"));
 	tank->AddComponent<Core::Components::ModelComponent>(resourceMgr.GetModel("tank"));
 	table->AddComponent<Core::Components::ModelComponent>(resourceMgr.GetModel("table"));
 	handgun->AddComponent<Core::Components::ModelComponent>(resourceMgr.GetModel("statue"));
+	statue->AddComponent<Core::Components::ModelComponent>(resourceMgr.GetModel("statue"));
 
 
 	std::cout << "time to load all objects: " << elapsed.count() << std::endl;
@@ -61,7 +61,8 @@ int main()
 	glm::vec3 distanceFromPlayer(0.0f, 0.2f, 0.0f);
 	tank->AddComponent<Core::Components::CameraComponent>(distanceFromPlayer);
 
-	handgun->AddTexture("../rsc/textures/brick.png");
+	statue->AddTexture("../rsc/textures/brick.png");
+
 
 	scene1.AddGameObject(statue, "statue");
 	scene1.AddGameObject(tank, "tank");
@@ -70,10 +71,9 @@ int main()
 
 	gameManager.AddScene(scene1);
 	gameManager.SetActiveScene(0);
-
 	glm::vec3 newPos = glm::vec3(-1.0f, 0, 0);
 	glm::vec3 rota = glm::vec3(0, 0, 0);
-	glm::vec3 scale = glm::vec3(0.01f, 0.01f, 0.01f);
+	glm::vec3 scale = glm::vec3(0.1f, 0.1f, 0.1f);
 
 
 	glm::vec3 newPos2 = glm::vec3(1.0f, 0, 0);
@@ -88,10 +88,10 @@ int main()
 	glm::vec3 rota4 = glm::vec3(0, 0, 0);
 	glm::vec3 scale4 = glm::vec3(0.005f, 0.005f, 0.005f);
 	
-	gameManager.GetActiveScene().FindGameObject("statue")->SetTransform(newPos, rota, scale);
 	gameManager.GetActiveScene().FindGameObject("table")->SetTransform(newPos2, rota2, scale2);
 	gameManager.GetActiveScene().FindGameObject("tank")->SetTransform(newPos3, rota3, scale3);
-	gameManager.GetActiveScene().FindGameObject("handgun")->SetTransform(newPos4, rota4, scale4);
+	gameManager.GetActiveScene().FindGameObject("handgun")->SetTransform(newPos, rota, scale);
+	gameManager.GetActiveScene().FindGameObject("statue")->SetTransform(newPos4, rota4, scale4);
 
 	//Core::Components::PlayerComponent& playerComp = *player->GetComponent<Core::Components::PlayerComponent>();
 
@@ -106,9 +106,10 @@ int main()
 		// ##### Update #####
 		gameManager.Update();
 
-		gameManager.GetActiveScene().FindGameObject("tank")->SetTransform(newPos3, rota3, scale3);
+		//TODO PROBLEM HERE: doesn't draw model
+		/*gameManager.GetActiveScene().FindGameObject("handgun")->SetTransform(newPos3, rota3, scale3);
 		rota3.x += 1;
-		rota3.y += 1;
+		rota3.y += 1;*/
 		// ##### Drawing #####
 		gameManager.DrawActiveScene(*renderer);
 		device->Render();

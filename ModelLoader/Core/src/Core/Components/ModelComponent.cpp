@@ -40,7 +40,7 @@ void Core::Components::ModelComponent::Update()
 
 	glm::mat4 modelMatrix = m_gameObject.GetTransform().GetModelMatrix();
 
-	if (m_model->GetShader())
+	if (m_model->GetShader() && m_model->GetMesh())
 	{
 		m_model->GetShader()->Bind();
 		m_model->GetShader()->SetUniformMatrix4fv("modelMatrix", modelMatrix);
@@ -50,7 +50,7 @@ void Core::Components::ModelComponent::Update()
 	}
 }
 
-Rendering::Resources::Mesh* ModelComponent::GetMesh()
+Rendering::Resources::Mesh* ModelComponent::GetMesh() const
 {
 	if (!m_model)
 		return nullptr;
@@ -58,7 +58,7 @@ Rendering::Resources::Mesh* ModelComponent::GetMesh()
 	return m_model->GetMesh();
 }
 
-Rendering::Resources::Model* ModelComponent::GetModel()
+Rendering::Resources::Model* ModelComponent::GetModel() const
 {
 	return m_model;
 }

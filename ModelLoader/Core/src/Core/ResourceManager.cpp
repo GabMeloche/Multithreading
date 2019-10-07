@@ -35,7 +35,6 @@ void ResourceManager::AddModelThread(const char* p_path, unsigned int p_promiseI
 	std::vector<glm::vec2> tmpUv;
 	std::vector<glm::vec3> tmpNormal;
 
-	auto start = std::chrono::high_resolution_clock::now();
 	std::ifstream in(p_path);
 
 	if (!in)
@@ -106,31 +105,14 @@ void ResourceManager::AddModelThread(const char* p_path, unsigned int p_promiseI
 		}
 
 	}
-
-	auto end = std::chrono::high_resolution_clock::now();
-	std::chrono::duration<double> elapsed = end - start;
-	std::cout << p_name << " Time for while loop: " << elapsed.count() << std::endl;
-
-	start = std::chrono::high_resolution_clock::now();
-	
 	for (unsigned int i = 0; i < faceIndex.size(); ++i)
 	{
 		Rendering::Geometry::Vertex vertex{ tmpVertex[i % tmpVertex.size()], tmpUv[textureIndex[i]], tmpNormal[normalIndex[i]] };
 		vertices.push_back(vertex);
 	}
-
-	end = std::chrono::high_resolution_clock::now();
-	elapsed = end - start;
-	std::cout << p_name << " Time for faceIndex loop: " << elapsed.count() << std::endl;
-	
-	start = std::chrono::high_resolution_clock::now();
 	
 	auto model = m_models.try_emplace(p_name, new Rendering::Resources::Model(new Rendering::Resources::Mesh(vertices, faceIndex)));
 	m_promises[p_promiseIndex].set_value(model.first->second);
-	
-	end = std::chrono::high_resolution_clock::now();
-	elapsed = end - start;
-	std::cout << p_name << " Time to create new model: " << elapsed.count() << std::endl;
 }
 
 void ResourceManager::WaitLoad()
@@ -155,5 +137,6 @@ Rendering::Resources::Model* ResourceManager::GetModel(const std::string& p_name
 		std::cout << "Could not find model: " + p_name + " in ResourceManager\n";
 		return nullptr;
 	}
+	
 	return m_models.find(p_name)->second;
 }
