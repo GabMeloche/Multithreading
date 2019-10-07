@@ -31,7 +31,9 @@ void ResourceManager::WaitLoad()
 {
 	for (auto& future : m_futures)
 	{
-		future.get();
+		Rendering::Resources::Model* model = future.get();
+		model->GetMesh()->CreateBuffers();
+		model->LoadShader();
 	}
 }
 

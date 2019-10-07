@@ -52,13 +52,6 @@ int main()
 	
 	auto end = std::chrono::high_resolution_clock::now();
 	std::chrono::duration<double> elapsed = end - start;
-	
-	resourceMgr.GetModels()[0]->GetMesh()->CreateBuffers();
-	resourceMgr.GetModels()[0]->LoadShader();
-	resourceMgr.GetModels()[1]->GetMesh()->CreateBuffers();
-	resourceMgr.GetModels()[1]->LoadShader();
-	resourceMgr.GetModels()[2]->GetMesh()->CreateBuffers();
-	resourceMgr.GetModels()[2]->LoadShader();
 
 	statue->AddComponent<Core::Components::ModelComponent>(resourceMgr.GetModels()[0]);
 	player->AddComponent<Core::Components::ModelComponent>(resourceMgr.GetModels()[1]);
