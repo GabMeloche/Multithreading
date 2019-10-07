@@ -10,14 +10,14 @@ namespace Rendering::Managers
 	{
 	public:
 		Renderer() noexcept = default;
-		~Renderer() noexcept = default;
+		~Renderer() noexcept;
 
 		template<typename T>
 		void Initialize()
 		{
 			static_assert(std::is_base_of_v<Context::IDriver, T>);
 
-			m_driver = std::make_unique<T>();
+			m_driver = new T{};
 			m_driver->EnableDebug();
 		}
 
@@ -28,7 +28,7 @@ namespace Rendering::Managers
 
 		bool IsDrawFilled() const;
 	private:
-		std::unique_ptr<Context::IDriver> m_driver;
+		Context::IDriver* m_driver;
 		bool m_fillDrawIsOn{ false };
 	};
 }

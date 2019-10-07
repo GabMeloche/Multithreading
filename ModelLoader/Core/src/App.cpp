@@ -41,21 +41,17 @@ int main()
 	ResourceManager resourceMgr{};
 	auto start = std::chrono::high_resolution_clock::now();
 	
-	std::promise <Rendering::Resources::Model*> promise;
-	// vector future
-	// handshake
-	
-	resourceMgr.AddModel("../rsc/models/statue.obj");
-	resourceMgr.AddModel("../rsc/models/TigerTank.obj");
-	resourceMgr.AddModel("../rsc/models/BarrocMiniTable.obj");
+	resourceMgr.AddModel("../rsc/models/statue.obj", "statue");
+	resourceMgr.AddModel("../rsc/models/TigerTank.obj", "tank");
+	resourceMgr.AddModel("../rsc/models/BarrocMiniTable.obj", "table");
 	resourceMgr.WaitLoad();
 	
 	auto end = std::chrono::high_resolution_clock::now();
 	std::chrono::duration<double> elapsed = end - start;
 
-	statue->AddComponent<Core::Components::ModelComponent>(resourceMgr.GetModels()[0]);
-	player->AddComponent<Core::Components::ModelComponent>(resourceMgr.GetModels()[1]);
-	table->AddComponent<Core::Components::ModelComponent>(resourceMgr.GetModels()[2]);
+	statue->AddComponent<Core::Components::ModelComponent>(resourceMgr.GetModel("statue"));
+	player->AddComponent<Core::Components::ModelComponent>(resourceMgr.GetModel("tank"));
+	table->AddComponent<Core::Components::ModelComponent>(resourceMgr.GetModel("table"));
 
 
 	std::cout << "time to load all objects: " << elapsed.count() << std::endl;
@@ -101,9 +97,9 @@ int main()
 		// ##### Update #####
 		gameManager.Update();
 
-		/*gameManager.GetActiveScene().FindGameObject("player")->SetTransform(newPos3, rota3, scale3);
+		gameManager.GetActiveScene().FindGameObject("player")->SetTransform(newPos3, rota3, scale3);
 		rota3.x += 1;
-		rota3.y += 1;*/
+		rota3.y += 1;
 		// ##### Drawing #####
 		gameManager.DrawActiveScene(*renderer);
 		device->Render();

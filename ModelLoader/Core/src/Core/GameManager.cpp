@@ -14,7 +14,6 @@ GameManager::GameManager(Rendering::Managers::Renderer * p_renderer)
 GameManager::~GameManager()
 {
 	delete m_device;
-	delete m_rendererRef;
 }
 
 void Core::GameManager::AddGameObjectToScene(const std::string& p_name, std::shared_ptr<GameObject> p_gameObject, const int p_scene)

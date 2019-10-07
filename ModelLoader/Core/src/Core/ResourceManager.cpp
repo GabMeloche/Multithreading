@@ -10,21 +10,129 @@
 ResourceManager::~ResourceManager()
 {
 	for (auto& model: m_models)
-			delete model;
+			delete model.second;
 
 	m_models.clear();
 }
 
-void ResourceManager::AddModel(const char* p_path)
-{
+/// Remember to call "WaitLoad()" before rendering objects for first time
+void ResourceManager::AddModel(const char* p_path, const std::string& p_name)
+{	
 	std::promise<Rendering::Resources::Model*> newPromise;
 	std::future<Rendering::Resources::Model*> newFuture = newPromise.get_future();
 	
 	m_promises.push_back(std::move(newPromise));
 	m_futures.push_back(std::move(newFuture));
-	int index = m_futures.size() - 1;
-	std::thread t{ &ResourceManager::AddModelThread, this, p_path, index };
+	unsigned int index = m_futures.size() - 1;
+	std::thread t{ &ResourceManager::AddModelThread, this, p_path, index, p_name };
 	t.detach();
+}
+
+void ResourceManager::AddModelThread(const char* p_path, unsigned int p_promiseIndex, const std::string& p_name)
+{	
+	bool isQuad = false;
+	std::vector<Rendering::Geometry::Vertex> vertices;
+	std::vector<GLuint> faceIndex, textureIndex, normalIndex;
+	std::vector<glm::vec3> tmpVertex;
+	std::vector<glm::vec2> tmpUv;
+	std::vector<glm::vec3> tmpNormal;
+
+	auto start = std::chrono::high_resolution_clock::now();
+	std::ifstream in(p_path);
+
+	if (!in)
+	{
+		std::cerr << "Cannot open " << p_path << std::endl;
+		exit(1);
+
+	}
+	
+	std::string line;
+	while (std::getline(in, line))
+	{
+		//check v for vertices
+		if (line.substr(0, 2) == "v ")
+		{
+			std::istringstream v(line.substr(2));
+			glm::vec3 vert;
+			GLfloat x, y, z;
+			v >> x; v >> y; v >> z;
+			vert = glm::vec3(x, y, z);
+			tmpVertex.push_back(vert);
+		}
+		//check for texture co-ordinate
+		else if (line.substr(0, 2) == "vt")
+		{
+
+			std::istringstream v(line.substr(3));
+			glm::vec2 tex;
+			GLfloat U, V;
+			v >> U; v >> V;
+			tex = glm::vec2(U, V);
+			tmpUv.push_back(tex);
+
+		}
+		else if (line.substr(0, 2) == "vn")
+		{
+
+			std::istringstream v(line.substr(3));
+			glm::vec3 norm;
+			GLfloat x, y, z;
+			v >> x; v >> y; v >> z;
+			norm = glm::vec3(x, y, z);
+			tmpNormal.push_back(norm);
+
+		}
+
+		//check for faces
+		else if (line.substr(0, 2) == "f ")
+		{
+			GLuint x, y, z, a; //to store mesh index
+			GLuint u, v, w, i; //to store texture index
+			GLuint X, Y, Z, A; //to store normal index
+			
+			const char* chh = line.c_str();
+			int count = sscanf(chh, "f %i/%i/%i %i/%i/%i %i/%i/%i %i/%i/%i", &x, &u, &X, &y, &v, &Y, &z, &w, &Z, &a, &i, &A);
+			
+			faceIndex.push_back(x - 1); textureIndex.push_back(u - 1); normalIndex.push_back(X - 1);
+			faceIndex.push_back(y - 1); textureIndex.push_back(v - 1); normalIndex.push_back(Y - 1);
+			faceIndex.push_back(z - 1); textureIndex.push_back(w - 1); normalIndex.push_back(Z - 1);
+
+			if (count == 12)
+			{
+
+				faceIndex.push_back(z - 1); textureIndex.push_back(w - 1); normalIndex.push_back(Z - 1);
+				faceIndex.push_back(a - 1); textureIndex.push_back(i - 1); normalIndex.push_back(A - 1);
+				faceIndex.push_back(x - 1); textureIndex.push_back(u - 1); normalIndex.push_back(X - 1);
+			}
+		}
+
+	}
+
+	auto end = std::chrono::high_resolution_clock::now();
+	std::chrono::duration<double> elapsed = end - start;
+	std::cout << p_name << " Time for while loop: " << elapsed.count() << std::endl;
+
+	start = std::chrono::high_resolution_clock::now();
+	
+	for (unsigned int i = 0; i < faceIndex.size(); ++i)
+	{
+		Rendering::Geometry::Vertex vertex{ tmpVertex[i % tmpVertex.size()], tmpUv[textureIndex[i]], tmpNormal[normalIndex[i]] };
+		vertices.push_back(vertex);
+	}
+
+	end = std::chrono::high_resolution_clock::now();
+	elapsed = end - start;
+	std::cout << p_name << " Time for faceIndex loop: " << elapsed.count() << std::endl;
+
+	start = std::chrono::high_resolution_clock::now();
+	
+	auto model = m_models.try_emplace(p_name, new Rendering::Resources::Model(new Rendering::Resources::Mesh(vertices, faceIndex)));
+	m_promises[p_promiseIndex].set_value(model.first->second);
+
+	end = std::chrono::high_resolution_clock::now();
+	elapsed = end - start;
+	std::cout << p_name << " Time to create new model: " << elapsed.count() << std::endl;
 }
 
 void ResourceManager::WaitLoad()
@@ -37,92 +145,12 @@ void ResourceManager::WaitLoad()
 	}
 }
 
-void ResourceManager::AddModelThread(const char* p_path, int p_promiseIndex)
+Rendering::Resources::Model* ResourceManager::GetModel(const std::string& p_name)
 {
-	bool isQuad = false;
-	std::vector<Rendering::Geometry::Vertex> vertices;
-	std::vector<GLuint> faceIndex, textureIndex, normalIndex;
-	std::vector<glm::vec3> tmp_vertex;
-	std::vector<glm::vec2> tmp_uv;
-	std::vector<glm::vec3> tmp_normal;
-
-	std::ifstream in(p_path);
-
-	if (!in)
+	if (m_models.find(p_name) == m_models.end())
 	{
-		std::cerr << "Cannot open " << p_path << std::endl;
-		exit(1);
-
+		std::cout << "Could not find model: " + p_name + " in ResourceManager\n";
+		return nullptr;
 	}
-	std::string line;
-	while (std::getline(in, line))
-	{
-		//check v for vertices
-		if (line.substr(0, 2) == "v ")
-		{
-			std::istringstream v(line.substr(2));
-			glm::vec3 vert;
-			GLfloat x, y, z;
-			v >> x; v >> y; v >> z;
-			vert = glm::vec3(x, y, z);
-			tmp_vertex.push_back(vert);
-		}
-		//check for texture co-ordinate
-		else if (line.substr(0, 2) == "vt")
-		{
-
-			std::istringstream v(line.substr(3));
-			glm::vec2 tex;
-			GLfloat U, V;
-			v >> U; v >> V;
-			tex = glm::vec2(U, V);
-			tmp_uv.push_back(tex);
-
-		}
-		else if (line.substr(0, 2) == "vn")
-		{
-
-			std::istringstream v(line.substr(3));
-			glm::vec3 norm;
-			GLfloat x, y, z;
-			v >> x; v >> y; v >> z;
-			norm = glm::vec3(x, y, z);
-			tmp_normal.push_back(norm);
-
-		}
-
-		//check for faces
-		else if (line.substr(0, 2) == "f ")
-		{
-			GLuint x, y, z, a; //to store mesh index
-			GLuint u, v, w, i; //to store texture index
-			GLuint X, Y, Z, A; //to store normal index
-			//std::istringstream v;
-		  //v.str(line.substr(2));
-			const char* chh = line.c_str();
-			int count = sscanf(chh, "f %i/%i/%i %i/%i/%i %i/%i/%i %i/%i/%i", &x, &u, &X, &y, &v, &Y, &z, &w, &Z, &a, &i, &A); //here it read the line start with f and store the corresponding values in the variables
-
-			faceIndex.push_back(x - 1); textureIndex.push_back(u - 1); normalIndex.push_back(X - 1);
-			faceIndex.push_back(y - 1); textureIndex.push_back(v - 1); normalIndex.push_back(Y - 1);
-			faceIndex.push_back(z - 1); textureIndex.push_back(w - 1); normalIndex.push_back(Z - 1);
-			if (count == 12)
-			{
-				//faceIndex.push_back(a - 1); textureIndex.push_back(i - 1); normalIndex.push_back(A - 1);
-				isQuad = true;
-			}
-			else
-				isQuad = false;
-		}
-
-	}
-
-	for (unsigned int i = 0; i < faceIndex.size(); ++i)
-	{
-		Rendering::Geometry::Vertex vertex{ tmp_vertex[i % tmp_vertex.size()], tmp_uv[textureIndex[i]], tmp_normal[normalIndex[i]] };
-		vertices.push_back(vertex);
-	}
-
-
-	m_models.emplace_back(new Rendering::Resources::Model(new Rendering::Resources::Mesh(vertices, faceIndex)));
-	m_promises[p_promiseIndex].set_value(m_models.back());
+	return m_models.find(p_name)->second;
 }

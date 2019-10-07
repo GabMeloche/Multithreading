@@ -4,6 +4,11 @@
 #include "Rendering/LowRenderer/Camera.h"
 
 
+Rendering::Managers::Renderer::~Renderer() noexcept
+{
+	//delete m_driver;
+}
+
 void Rendering::Managers::Renderer::Clear() const noexcept
 {
 	m_driver->Clear();

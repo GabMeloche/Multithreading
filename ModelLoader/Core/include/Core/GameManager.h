@@ -43,6 +43,6 @@ namespace Core
 		double lastFrame = 0.0;
 		Rendering::Context::IDevice* m_device{};
 		std::vector<Scene> m_allScenes;
-		Rendering::Managers::Renderer * m_rendererRef;
+		Rendering::Managers::Renderer* m_rendererRef;
 	};
 }
