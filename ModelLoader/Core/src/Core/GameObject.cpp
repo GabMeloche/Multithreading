@@ -27,6 +27,9 @@ void Core::GameObject::TranslateBy(glm::vec3 & p_vec)
 
 void Core::GameObject::SetTransform(glm::vec3 & p_pos, glm::vec3 & p_rot, glm::vec3 & p_scale)
 {
+	if (!this)
+		return;
+	
 	m_transform.SetTransform(p_pos, p_rot, p_scale);
 }
 

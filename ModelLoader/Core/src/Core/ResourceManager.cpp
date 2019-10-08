@@ -1,11 +1,7 @@
-#include "stdafx.h"
-
-#include <Core/ResourceManager.h>
-#include <fstream>
-#include <sstream>
-#include <thread>
-
 #pragma warning (disable: 4996)
+
+#include "stdafx.h"
+#include <Core/ResourceManager.h>
 
 ResourceManager::~ResourceManager()
 {
@@ -17,17 +13,30 @@ ResourceManager::~ResourceManager()
 
 /// Remember to call "WaitLoad()" before rendering objects for first time
 void ResourceManager::AddModel(const char* p_path, const std::string& p_name)
-{	
+{
+	if (m_models.find(p_name) == m_models.end() && !m_models.empty())
+	{
+		std::cout << "Model " << p_name << " already loaded\n";
+		return;
+	}
+	
 	std::promise<Rendering::Resources::Model*> newPromise;
 	std::future<Rendering::Resources::Model*> newFuture = newPromise.get_future();
 	m_promises.push_back(std::move(newPromise));
 	m_futures.push_back(std::move(newFuture));
-	unsigned int index = m_futures.size() - 1;
-	std::thread t{ &ResourceManager::AddModelThread, this, p_path, index, p_name };
+	size_t index = m_futures.size() - 1;
+	std::thread t{ &ResourceManager::AddModelThread, this, p_path, index, p_name, true };
 	t.detach();
 }
 
-void ResourceManager::AddModelThread(const char* p_path, unsigned int p_promiseIndex, const std::string& p_name)
+void ResourceManager::AddModelMonoThreaded(const char* p_path, const std::string& p_name)
+{
+	AddModelThread(p_path, 0, p_name, false);
+	m_models.find(p_name)->second->GetMesh()->CreateBuffers();
+	m_models.find(p_name)->second->LoadShader();
+}
+
+void ResourceManager::AddModelThread(const char* p_path, size_t p_promiseIndex, const std::string& p_name, bool p_multiThread)
 {	
 	std::vector<Rendering::Geometry::Vertex> vertices;
 	std::vector<GLuint> faceIndex, textureIndex, normalIndex;
@@ -67,7 +76,6 @@ void ResourceManager::AddModelThread(const char* p_path, unsigned int p_promiseI
 			v >> U; v >> V;
 			tex = glm::vec2(U, V);
 			tmpUv.push_back(tex);
-
 		}
 		else if (line.substr(0, 2) == "vn")
 		{
@@ -78,7 +86,6 @@ void ResourceManager::AddModelThread(const char* p_path, unsigned int p_promiseI
 			v >> x; v >> y; v >> z;
 			norm = glm::vec3(x, y, z);
 			tmpNormal.push_back(norm);
-
 		}
 
 		//check for faces
@@ -97,7 +104,6 @@ void ResourceManager::AddModelThread(const char* p_path, unsigned int p_promiseI
 
 			if (count == 12)
 			{
-
 				faceIndex.push_back(z - 1); textureIndex.push_back(w - 1); normalIndex.push_back(Z - 1);
 				faceIndex.push_back(a - 1); textureIndex.push_back(i - 1); normalIndex.push_back(A - 1);
 				faceIndex.push_back(x - 1); textureIndex.push_back(u - 1); normalIndex.push_back(X - 1);
@@ -112,16 +118,13 @@ void ResourceManager::AddModelThread(const char* p_path, unsigned int p_promiseI
 	}
 	
 	auto model = m_models.try_emplace(p_name, new Rendering::Resources::Model(new Rendering::Resources::Mesh(vertices, faceIndex)));
-	m_promises[p_promiseIndex].set_value(model.first->second);
+
+	if (p_multiThread)
+		m_promises[p_promiseIndex].set_value(model.first->second);
 }
 
 void ResourceManager::WaitLoad()
 {
-	/*for (auto& model: m_models)
-	{
-		model.second->GetMesh()->CreateBuffers();
-		model.second->LoadShader();
-	}*/
 	for (auto& future : m_futures)
 	{
 		Rendering::Resources::Model* model = future.get();

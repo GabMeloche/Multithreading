@@ -9,7 +9,6 @@
 #include <Rendering/Context/OpenGL/GLFWDevice.h>
 #include <Rendering/Context/OpenGL/GLEWDriver.h>
 #include <Rendering/Managers/Renderer.h>
-#include <Rendering/Resources/Model.h>
 #include <Rendering/LowRenderer/Camera.h>
 #include <Core/GameObject.h>
 #include <Rendering/Managers/InputManager.h>
@@ -19,7 +18,8 @@
 #include <Core/Components/CameraComponent.h>
 #include <Core/ResourceManager.h>
 #include <chrono>
-#include <thread>
+
+#define MULTITHREAD 0 // 0: multithreaded; 1: monothreaded load of models
 
 int main()
 {
@@ -40,15 +40,24 @@ int main()
 	Core::Scene scene1{};
 	ResourceManager resourceMgr{};
 	auto start = std::chrono::high_resolution_clock::now();
-	
+
+#if (MULTITHREAD == 0)
+	resourceMgr.AddModel("../rsc/models/Handgun_obj.obj", "handgun");
 	resourceMgr.AddModel("../rsc/models/statue.obj", "statue");
 	resourceMgr.AddModel("../rsc/models/TigerTank.obj", "tank");
 	resourceMgr.AddModel("../rsc/models/BarrocMiniTable.obj", "table");
-	//resourceMgr.AddModel("../rsc/models/Handgun_obj.obj", "handgun");
 	resourceMgr.WaitLoad();
+
+#elif (MULTITHREAD == 1)
+	resourceMgr.AddModelMonoThreaded("../rsc/models/statue.obj", "statue");
+	resourceMgr.AddModelMonoThreaded("../rsc/models/TigerTank.obj", "tank");
+	resourceMgr.AddModelMonoThreaded("../rsc/models/BarrocMiniTable.obj", "table");
+	resourceMgr.AddModelMonoThreaded("../rsc/models/Handgun_obj.obj", "handgun");
+#endif
 	
 	auto end = std::chrono::high_resolution_clock::now();
 	std::chrono::duration<double> elapsed = end - start;
+	std::cout << "time to load all objects: " << elapsed.count() << std::endl;
 
 	tank->AddComponent<Core::Components::ModelComponent>(resourceMgr.GetModel("tank"));
 	table->AddComponent<Core::Components::ModelComponent>(resourceMgr.GetModel("table"));
@@ -56,13 +65,9 @@ int main()
 	statue->AddComponent<Core::Components::ModelComponent>(resourceMgr.GetModel("statue"));
 
 
-	std::cout << "time to load all objects: " << elapsed.count() << std::endl;
 	
 	glm::vec3 distanceFromPlayer(0.0f, 0.2f, 0.0f);
 	tank->AddComponent<Core::Components::CameraComponent>(distanceFromPlayer);
-
-	statue->AddTexture("../rsc/textures/brick.png");
-
 
 	scene1.AddGameObject(handgun, "handgun");
 	scene1.AddGameObject(statue, "statue");
@@ -104,9 +109,6 @@ int main()
 		// ##### Update #####
 		gameManager.Update();
 
-		/*gameManager.GetActiveScene().FindGameObject("handgun")->SetTransform(newPos3, rota3, scale3);
-		rota3.x += 1;
-		rota3.y += 1;*/
 		// ##### Drawing #####
 		gameManager.DrawActiveScene(*renderer);
 		device->Render();

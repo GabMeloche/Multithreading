@@ -1,10 +1,14 @@
 #pragma once
-#include <Rendering/Export.h>
-#include <Rendering/Resources/Model.h>
-#include <cstdarg>
+#include "stdafx.h"
+
+#include <fstream>
+#include <sstream>
+#include <thread>
 #include <future>
 
-///flyweight model: models loaded here and sent as reference to GameObjects
+#include <Rendering/Resources/Model.h>
+
+///flyweight model: models loaded here and sent to GameObject as pointers
 class ResourceManager
 {
 public:
@@ -12,11 +16,16 @@ public:
 	~ResourceManager();
 
 	void AddModel(const char* p_path, const std::string& p_name);
-	void AddModelThread(const char* p_path, unsigned int p_promiseIndex, const std::string& p_name);
+
+	///AddModelThread() is multithreaded; must use WaitLoad() once every model has been loaded
+	void AddModelThread(const char* p_path, size_t p_promiseIndex, const std::string& p_name, bool p_multiThread);
 	void WaitLoad();
+
+	//Alternative to AddModelThread() and WaitLoad()
+	void AddModelMonoThreaded(const char* p_path, const std::string& p_name);
 	
 	Rendering::Resources::Model* GetModel(const std::string& p_name);
-	inline std::unordered_map < std::string, Rendering::Resources::Model* > & GetModels() { return m_models; }
+	inline std::unordered_map <std::string, Rendering::Resources::Model*> & GetModels() { return m_models; }
 	
 private:
 	std::unordered_map<std::string, Rendering::Resources::Model*> m_models;

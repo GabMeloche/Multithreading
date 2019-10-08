@@ -29,30 +29,6 @@ namespace Core
 		void UpdateShaders();
 		void RecompileShaders();
 
-		//make into variadic template
-		/*template<typename T>
-		void AddComponent(T p_component)
-		{
-			try
-			{
-				if (typeid(T) == typeid(Core::Components::PlayerComponent) && GetComponent<Core::Components::PlayerComponent>() != nullptr)
-				{
-					std::cout << "GameObject already has one PlayerComponent\n";
-					return;
-				}
-				if (typeid(T) == typeid(Core::Components::CameraComponent) && GetComponent<Core::Components::CameraComponent>() != nullptr)
-				{
-					std::cout << "GameObject already has one CameraComponent\n";
-					return;
-				}
-				m_components.emplace_back(std::make_shared<T>(p_component));
-			}
-			catch (...)
-			{
-				std::cout << "AddComponent didn't work\n";
-			}
-		}*/
-
 		template<typename T, typename ... args>
 		void AddComponent(args ... p_args)
 		{
