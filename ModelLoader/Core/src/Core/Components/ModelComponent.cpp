@@ -32,22 +32,6 @@ const std::string& ModelComponent::GetType() const
 
 void Core::Components::ModelComponent::Update()
 {
-	if (m_model == nullptr)
-		return;
-	
-	glm::mat4 projection = Rendering::LowRenderer::Camera::GetInstance()->GetProjectionMatrix();
-	glm::mat4 view = Rendering::LowRenderer::Camera::GetInstance()->GetViewMatrix();
-
-	glm::mat4 modelMatrix = m_gameObject.GetTransform().GetModelMatrix();
-
-	if (m_model->GetShader() && m_model->GetMesh())
-	{
-		m_model->GetShader()->Bind();
-		m_model->GetShader()->SetUniformMatrix4fv("modelMatrix", modelMatrix);
-		m_model->GetShader()->SetUniformMatrix4fv("projectionMatrix", projection);
-		m_model->GetShader()->SetUniformMatrix4fv("viewMatrix", view);
-		m_model->GetShader()->Unbind();
-	}
 }
 
 Rendering::Resources::Mesh* ModelComponent::GetMesh() const

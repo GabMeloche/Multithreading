@@ -37,7 +37,7 @@ void Core::Scene::DrawAll(Rendering::Managers::Renderer& p_renderer)
 			|| !gameObject.second->GetComponent<Components::ModelComponent>()->GetMesh())
 			continue;
 
-		p_renderer.Draw(gameObject.second->GetComponent<Components::ModelComponent>()->GetModel());
+		p_renderer.Draw(gameObject.second->GetComponent<Components::ModelComponent>()->GetModel(), gameObject.second->GetTransform());
 	}
 }
 

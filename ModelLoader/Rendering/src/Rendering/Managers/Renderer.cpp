@@ -2,6 +2,7 @@
 #include <Rendering/Managers/Renderer.h>
 #include <Rendering/Resources/Model.h>
 #include "Rendering/LowRenderer/Camera.h"
+#include "Rendering/Resources/Transform.h"
 
 
 Rendering::Managers::Renderer::~Renderer() noexcept
@@ -27,8 +28,25 @@ void Rendering::Managers::Renderer::PolygonModeFill() noexcept
 }
 
 void Rendering::Managers::Renderer::Draw(
-	Resources::Model* p_model) const noexcept
+	Resources::Model* p_model, Resources::Transform& p_transform) const noexcept
 {
+	if (p_model == nullptr)
+		return;
+
+	glm::mat4 projection = Rendering::LowRenderer::Camera::GetInstance()->GetProjectionMatrix();
+	glm::mat4 view = Rendering::LowRenderer::Camera::GetInstance()->GetViewMatrix();
+
+	glm::mat4 modelMatrix = p_transform.GetModelMatrix();
+	
+	if (p_model->GetShader() && p_model->GetMesh())
+	{
+		p_model->GetShader()->Bind();
+		p_model->GetShader()->SetUniformMatrix4fv("modelMatrix", modelMatrix);
+		p_model->GetShader()->SetUniformMatrix4fv("projectionMatrix", projection);
+		p_model->GetShader()->SetUniformMatrix4fv("viewMatrix", view);
+		p_model->GetShader()->Unbind();
+	}
+	
 	glCullFace(GL_BACK);
 	glEnable(GL_CULL_FACE);
 	glEnable(GL_DEPTH_TEST);
@@ -43,7 +61,6 @@ void Rendering::Managers::Renderer::Draw(
 	else
 	{
 		glDrawArrays(GL_TRIANGLES, 0, p_model->GetMesh()->GetVertexCount());
-
 	}
 
 	p_model->Unbind();

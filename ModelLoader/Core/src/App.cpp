@@ -52,7 +52,7 @@ int main()
 
 	tank->AddComponent<Core::Components::ModelComponent>(resourceMgr.GetModel("tank"));
 	table->AddComponent<Core::Components::ModelComponent>(resourceMgr.GetModel("table"));
-	handgun->AddComponent<Core::Components::ModelComponent>(resourceMgr.GetModel("statue"));
+	handgun->AddComponent<Core::Components::ModelComponent>(resourceMgr.GetModel("tank"));
 	statue->AddComponent<Core::Components::ModelComponent>(resourceMgr.GetModel("statue"));
 
 
@@ -64,10 +64,10 @@ int main()
 	statue->AddTexture("../rsc/textures/brick.png");
 
 
+	scene1.AddGameObject(handgun, "handgun");
 	scene1.AddGameObject(statue, "statue");
 	scene1.AddGameObject(tank, "tank");
 	scene1.AddGameObject(table, "table");
-	scene1.AddGameObject(handgun, "handgun");
 
 	gameManager.AddScene(scene1);
 	gameManager.SetActiveScene(0);
@@ -93,8 +93,6 @@ int main()
 	gameManager.GetActiveScene().FindGameObject("handgun")->SetTransform(newPos, rota, scale);
 	gameManager.GetActiveScene().FindGameObject("statue")->SetTransform(newPos4, rota4, scale4);
 
-	//Core::Components::PlayerComponent& playerComp = *player->GetComponent<Core::Components::PlayerComponent>();
-
 	while (!device->ShouldClose())
 	{
 		device->RefreshEvent();
@@ -106,7 +104,6 @@ int main()
 		// ##### Update #####
 		gameManager.Update();
 
-		//TODO PROBLEM HERE: doesn't draw model
 		/*gameManager.GetActiveScene().FindGameObject("handgun")->SetTransform(newPos3, rota3, scale3);
 		rota3.x += 1;
 		rota3.y += 1;*/

@@ -2,7 +2,8 @@
 #include <Rendering/Export.h>
 #include <Rendering/Context/IDriver.h>
 #include <Rendering/Resources/Mesh.h>
-#include "Rendering/Resources/Model.h"
+#include <Rendering/Resources/Model.h>
+#include <Rendering/Resources/Transform.h>
 
 namespace Rendering::Managers
 {
@@ -24,7 +25,7 @@ namespace Rendering::Managers
 		void Clear() const noexcept;
 		void PolygonModeLine() noexcept;
 		void PolygonModeFill() noexcept;
-		void Draw(Resources::Model* p_model) const noexcept;
+		void Draw(Resources::Model* p_model, Resources::Transform& p_transform) const noexcept;
 
 		bool IsDrawFilled() const;
 	private:
