@@ -32,6 +32,7 @@ int main()
 	Core::GameManager gameManager(renderer.get());
 	Rendering::LowRenderer::Camera mainCamera;
 
+	//Create GameObjects
 	std::shared_ptr<Core::GameObject> statue = std::make_shared<Core::GameObject>();
 	std::shared_ptr<Core::GameObject> table = std::make_shared<Core::GameObject>();
     std::shared_ptr<Core::GameObject> tank = std::make_shared<Core::GameObject>();
@@ -42,11 +43,10 @@ int main()
 	auto start = std::chrono::high_resolution_clock::now();
 
 #if (MULTITHREAD == 0)
-	resourceMgr.AddModel("../rsc/models/Handgun_obj.obj", "handgun");
-	resourceMgr.AddModel("../rsc/models/Handgun_obj.obj", "handgun");
-	resourceMgr.AddModel("../rsc/models/statue.obj", "statue");
-	resourceMgr.AddModel("../rsc/models/TigerTank.obj", "tank");
-	resourceMgr.AddModel("../rsc/models/BarrocMiniTable.obj", "table");
+	resourceMgr.AddModelMultiThreaded("../rsc/models/Handgun_obj.obj", "handgun");
+	resourceMgr.AddModelMultiThreaded("../rsc/models/statue.obj", "statue");
+	resourceMgr.AddModelMultiThreaded("../rsc/models/TigerTank.obj", "tank");
+	resourceMgr.AddModelMultiThreaded("../rsc/models/BarrocMiniTable.obj", "table");
 	resourceMgr.WaitLoad();
 
 #elif (MULTITHREAD == 1)
@@ -60,6 +60,7 @@ int main()
 	std::chrono::duration<double> elapsed = end - start;
 	std::cout << "time to load all objects: " << elapsed.count() << std::endl;
 
+	//Assign Models to GameObjects
 	tank->AddComponent<Core::Components::ModelComponent>(resourceMgr.GetModel("tank"));
 	table->AddComponent<Core::Components::ModelComponent>(resourceMgr.GetModel("table"));
 	handgun->AddComponent<Core::Components::ModelComponent>(resourceMgr.GetModel("tank"));
@@ -77,6 +78,7 @@ int main()
 
 	gameManager.AddScene(scene1);
 	gameManager.SetActiveScene(0);
+	
 	glm::vec3 newPos = glm::vec3(-1.0f, 0, 0);
 	glm::vec3 rota = glm::vec3(0, 0, 0);
 	glm::vec3 scale = glm::vec3(0.1f, 0.1f, 0.1f);

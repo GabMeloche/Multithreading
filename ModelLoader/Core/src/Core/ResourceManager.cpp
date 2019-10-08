@@ -10,31 +10,35 @@ Core::ResourceManager::~ResourceManager()
 }
 
 /// Remember to call "WaitLoad()" before rendering objects for first time
-void Core::ResourceManager::AddModel(const char* p_path, const std::string& p_name)
+void Core::ResourceManager::AddModelMultiThreaded(const char* p_path, const std::string& p_name)
 {
-	if (m_models.find(p_name) == m_models.end() && !m_models.empty())
+	if (m_models.find(p_name) != m_models.end() && !m_models.empty())
 	{
 		std::cout << "Model " << p_name << " already loaded\n";
 		return;
 	}
+
+	m_models.try_emplace(p_name, nullptr);
 	
 	std::promise<Rendering::Resources::Model*> newPromise;
 	std::future<Rendering::Resources::Model*> newFuture = newPromise.get_future();
+	
 	m_promises.push_back(std::move(newPromise));
 	m_futures.push_back(std::move(newFuture));
 	size_t index = m_futures.size() - 1;
-	std::thread t{ &ResourceManager::AddModelMultiThreaded, this, p_path, index, p_name, true };
+	
+	std::thread t{ &ResourceManager::AddModel, this, p_path, index, p_name, true };
 	t.detach();
 }
 
 void Core::ResourceManager::AddModelMonoThreaded(const char* p_path, const std::string& p_name)
 {
-	AddModelMultiThreaded(p_path, 0, p_name, false);
+	AddModel(p_path, 0, p_name, false);
 	m_models.find(p_name)->second->GetMesh()->CreateBuffers();
 	m_models.find(p_name)->second->LoadShader();
 }
 
-void Core::ResourceManager::AddModelMultiThreaded(const char* p_path, size_t p_promiseIndex, const std::string& p_name, bool p_multiThread)
+void Core::ResourceManager::AddModel(const char* p_path, size_t p_promiseIndex, const std::string& p_name, bool p_multiThread)
 {	
 	std::vector<Rendering::Geometry::Vertex> vertices;
 	std::vector<GLuint> faceIndex, textureIndex, normalIndex;
@@ -115,10 +119,10 @@ void Core::ResourceManager::AddModelMultiThreaded(const char* p_path, size_t p_p
 		vertices.push_back(vertex);
 	}
 	
-	auto model = m_models.try_emplace(p_name, new Rendering::Resources::Model(new Rendering::Resources::Mesh(vertices, faceIndex)));
+	auto model = m_models.find(p_name)->second = new Rendering::Resources::Model(new Rendering::Resources::Mesh(vertices, faceIndex));
 
 	if (p_multiThread)
-		m_promises[p_promiseIndex].set_value(model.first->second);
+		m_promises[p_promiseIndex].set_value(model);
 }
 
 void Core::ResourceManager::WaitLoad()

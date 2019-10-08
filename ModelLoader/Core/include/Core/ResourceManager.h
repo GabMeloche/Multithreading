@@ -17,10 +17,10 @@ namespace Core
 		ResourceManager() = default;
 		~ResourceManager();
 
-		void AddModel(const char* p_path, const std::string& p_name);
+		void AddModelMultiThreaded(const char* p_path, const std::string& p_name);
 
 		///AddModelThread() is multithreaded; must use WaitLoad() once every model has been loaded
-		void AddModelMultiThreaded(const char* p_path, size_t p_promiseIndex, const std::string& p_name, bool p_multiThread);
+		void AddModel(const char* p_path, size_t p_promiseIndex, const std::string& p_name, bool p_multiThread);
 		void WaitLoad();
 
 		//Alternative to AddModelThread() and WaitLoad()
