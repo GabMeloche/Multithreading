@@ -38,10 +38,11 @@ int main()
     std::shared_ptr<Core::GameObject> handgun = std::make_shared<Core::GameObject>();
 	
 	Core::Scene scene1{};
-	ResourceManager resourceMgr{};
+	Core::ResourceManager resourceMgr{};
 	auto start = std::chrono::high_resolution_clock::now();
 
 #if (MULTITHREAD == 0)
+	resourceMgr.AddModel("../rsc/models/Handgun_obj.obj", "handgun");
 	resourceMgr.AddModel("../rsc/models/Handgun_obj.obj", "handgun");
 	resourceMgr.AddModel("../rsc/models/statue.obj", "statue");
 	resourceMgr.AddModel("../rsc/models/TigerTank.obj", "tank");
@@ -93,9 +94,9 @@ int main()
 	glm::vec3 rota4 = glm::vec3(0, 0, 0);
 	glm::vec3 scale4 = glm::vec3(0.005f, 0.005f, 0.005f);
 	
+	gameManager.GetActiveScene().FindGameObject("handgun")->SetTransform(newPos, rota, scale);
 	gameManager.GetActiveScene().FindGameObject("table")->SetTransform(newPos2, rota2, scale2);
 	gameManager.GetActiveScene().FindGameObject("tank")->SetTransform(newPos3, rota3, scale3);
-	gameManager.GetActiveScene().FindGameObject("handgun")->SetTransform(newPos, rota, scale);
 	gameManager.GetActiveScene().FindGameObject("statue")->SetTransform(newPos4, rota4, scale4);
 
 	while (!device->ShouldClose())
@@ -113,8 +114,6 @@ int main()
 		gameManager.DrawActiveScene(*renderer);
 		device->Render();
 	}
-
-	//assert(Rendering::Resources::Loaders::MeshLoader::Destroy(mesh));
 
 	return EXIT_SUCCESS;
 }

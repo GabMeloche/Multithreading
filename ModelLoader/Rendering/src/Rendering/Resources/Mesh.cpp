@@ -75,7 +75,7 @@ void Rendering::Resources::Mesh::CreateBuffers() noexcept
 		rawNormals.push_back(vertex.m_normal[1]);
 		rawNormals.push_back(vertex.m_normal[2]);
 	}
-
+	
 	// Buffer gen
 	m_vboPosition = new Buffers::VertexBuffer(rawPositions);
 	m_vboTextCoords = new Buffers::VertexBuffer(rawTextCoords);

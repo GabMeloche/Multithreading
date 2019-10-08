@@ -1,9 +1,7 @@
-#pragma warning (disable: 4996)
-
 #include "stdafx.h"
 #include <Core/ResourceManager.h>
 
-ResourceManager::~ResourceManager()
+Core::ResourceManager::~ResourceManager()
 {
 	for (auto& model: m_models)
 			delete model.second;
@@ -12,7 +10,7 @@ ResourceManager::~ResourceManager()
 }
 
 /// Remember to call "WaitLoad()" before rendering objects for first time
-void ResourceManager::AddModel(const char* p_path, const std::string& p_name)
+void Core::ResourceManager::AddModel(const char* p_path, const std::string& p_name)
 {
 	if (m_models.find(p_name) == m_models.end() && !m_models.empty())
 	{
@@ -25,18 +23,18 @@ void ResourceManager::AddModel(const char* p_path, const std::string& p_name)
 	m_promises.push_back(std::move(newPromise));
 	m_futures.push_back(std::move(newFuture));
 	size_t index = m_futures.size() - 1;
-	std::thread t{ &ResourceManager::AddModelThread, this, p_path, index, p_name, true };
+	std::thread t{ &ResourceManager::AddModelMultiThreaded, this, p_path, index, p_name, true };
 	t.detach();
 }
 
-void ResourceManager::AddModelMonoThreaded(const char* p_path, const std::string& p_name)
+void Core::ResourceManager::AddModelMonoThreaded(const char* p_path, const std::string& p_name)
 {
-	AddModelThread(p_path, 0, p_name, false);
+	AddModelMultiThreaded(p_path, 0, p_name, false);
 	m_models.find(p_name)->second->GetMesh()->CreateBuffers();
 	m_models.find(p_name)->second->LoadShader();
 }
 
-void ResourceManager::AddModelThread(const char* p_path, size_t p_promiseIndex, const std::string& p_name, bool p_multiThread)
+void Core::ResourceManager::AddModelMultiThreaded(const char* p_path, size_t p_promiseIndex, const std::string& p_name, bool p_multiThread)
 {	
 	std::vector<Rendering::Geometry::Vertex> vertices;
 	std::vector<GLuint> faceIndex, textureIndex, normalIndex;
@@ -96,7 +94,7 @@ void ResourceManager::AddModelThread(const char* p_path, size_t p_promiseIndex, 
 			GLuint X, Y, Z, A; //to store normal index
 			
 			const char* chh = line.c_str();
-			int count = sscanf(chh, "f %i/%i/%i %i/%i/%i %i/%i/%i %i/%i/%i", &x, &u, &X, &y, &v, &Y, &z, &w, &Z, &a, &i, &A);
+			int count = sscanf_s(chh, "f %i/%i/%i %i/%i/%i %i/%i/%i %i/%i/%i", &x, &u, &X, &y, &v, &Y, &z, &w, &Z, &a, &i, &A);
 			
 			faceIndex.push_back(x - 1); textureIndex.push_back(u - 1); normalIndex.push_back(X - 1);
 			faceIndex.push_back(y - 1); textureIndex.push_back(v - 1); normalIndex.push_back(Y - 1);
@@ -123,7 +121,7 @@ void ResourceManager::AddModelThread(const char* p_path, size_t p_promiseIndex, 
 		m_promises[p_promiseIndex].set_value(model.first->second);
 }
 
-void ResourceManager::WaitLoad()
+void Core::ResourceManager::WaitLoad()
 {
 	for (auto& future : m_futures)
 	{
@@ -133,7 +131,7 @@ void ResourceManager::WaitLoad()
 	}
 }
 
-Rendering::Resources::Model* ResourceManager::GetModel(const std::string& p_name)
+Rendering::Resources::Model* Core::ResourceManager::GetModel(const std::string& p_name)
 {
 	if (m_models.find(p_name) == m_models.end())
 	{

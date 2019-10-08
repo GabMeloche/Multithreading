@@ -8,7 +8,7 @@ GLFWWindow* GLFWWindow::m_instance;
 
 GLFWWindow::GLFWWindow(unsigned int p_width, unsigned int p_height) noexcept
 {
-	m_glfwWindow = glfwCreateWindow(p_width, p_height, "Platformer - Luigi 64", nullptr, nullptr);
+	m_glfwWindow = glfwCreateWindow(p_width, p_height, "Multithread OBJ Parser", nullptr, nullptr);
 	assert(m_instance == nullptr);
 	m_instance = this;
 
